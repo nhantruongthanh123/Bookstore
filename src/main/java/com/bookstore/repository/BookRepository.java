@@ -2,16 +2,11 @@ package com.bookstore.repository;
 
 
 import com.bookstore.entity.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
-public class BookRepository {
-    List<Book> books;
+public interface BookRepository extends JpaRepository<Book, Integer> {
 
-    public BookRepository() {
-        books = new ArrayList<>();
-    }
 }
