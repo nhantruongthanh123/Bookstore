@@ -1,9 +1,9 @@
 package com.bookstore.controller;
 
 import com.bookstore.entity.Book;
-import com.bookstore.repository.BookRepository;
+
+import com.bookstore.service.book.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,34 +11,33 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/books")
 public class BookController {
-    @Autowired
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
-    @GetMapping("/all")
-    public List<Book> all(){
-        return bookRepository.findAll();
+    @GetMapping
+    public List<Book> getAllBooks(){
+        return bookService.getAllBooks();
     }
 
-    @GetMapping("book/{id}")
-    public Book findById(@PathVariable Integer id){
-        return bookRepository.findById(id).get();
+    @GetMapping("/{id}")
+    public Book getById(@PathVariable Integer id){
+        return bookService.getBookById(id);
     }
 
-    @PostMapping("/add")
-    public Book create(@RequestBody Book book){
-        return bookRepository.save(book);
+    @PostMapping
+    public Book createBook(@RequestBody Book book){
+        return bookService.createBook(book);
     }
 
-    @PutMapping("update/{id}")
-    public Book update(@RequestBody Book book, @PathVariable Integer id){
-        return  bookRepository.save(book);
+    @PutMapping("/{id}")
+    public Book updateBook(@RequestBody Book book, @PathVariable Integer id){
+        return  bookService.updateBook(id, book);
     }
 
-    @DeleteMapping("delete/{id}")
-    public void delete(@PathVariable Integer id){
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Integer id){
 
-        bookRepository.deleteById(id);
+        bookService.deleteBook(id);
     }
-
 }
