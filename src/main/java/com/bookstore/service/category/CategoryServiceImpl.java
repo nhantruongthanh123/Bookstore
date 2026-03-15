@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No category with id: " + id));
 
-        existingCategory.setCategory(category.getCategory());
+        existingCategory.setName(category.getName());
         existingCategory.setDescription(category.getDescription());
 
         return categoryRepository.save(existingCategory);

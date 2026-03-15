@@ -7,7 +7,7 @@ services:
       - '4318'
   mysql-db:
     image: 'mysql:8.0'
-    container_name: bookstore_db
+    container_name: bookstore-db
     ports:
       - '3306:3306'
     environment:
