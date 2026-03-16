@@ -1,6 +1,8 @@
 package com.bookstore.controller;
 
 
+import com.bookstore.dto.Category.CategoryRequest;
+import com.bookstore.dto.Category.CategoryResponse;
 import com.bookstore.entity.Category;
 import com.bookstore.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -15,27 +17,27 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<Category> getAllCategories() {
+    public List<CategoryResponse> getAllCategories() {
         return categoryService.getAllCategories();
     }
 
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable Integer id) {
+    public CategoryResponse getCategoryById(@PathVariable Long id) {
         return categoryService.getCategoryById(id);
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
+    public CategoryResponse createCategory(@RequestBody CategoryRequest category) {
         return categoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
+    public CategoryResponse updateCategory(@PathVariable Long id, @RequestBody CategoryRequest category) {
         return categoryService.updateCategory(id, category);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable Integer id) {
+    public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
     }
 }

@@ -1,0 +1,12 @@
+package com.bookstore.dto.Book;
+
+import java.util.Set;
+
+public record BookRequest(
+        String title,
+        String author,
+        String publisher,
+        double price,
+        String isbn,
+        Set<Long> categoryIds
+) {}

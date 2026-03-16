@@ -1,13 +1,15 @@
 package com.bookstore.service.category;
 
+import com.bookstore.dto.Category.CategoryRequest;
+import com.bookstore.dto.Category.CategoryResponse;
 import com.bookstore.entity.Category;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
-    Category getCategoryById(Integer id);
-    Category createCategory(Category category);
-    Category updateCategory(Integer id, Category category);
-    void deleteCategory(Integer id);
+    List<CategoryResponse> getAllCategories();
+    CategoryResponse getCategoryById(Long id);
+    CategoryResponse createCategory(CategoryRequest category);
+    CategoryResponse updateCategory(Long id, CategoryRequest categoryDetails);
+    void deleteCategory(Long id);
 }

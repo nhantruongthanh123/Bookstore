@@ -1,7 +1,10 @@
 package com.bookstore.service.category;
 
 
+import com.bookstore.dto.Category.CategoryRequest;
+import com.bookstore.dto.Category.CategoryResponse;
 import com.bookstore.entity.Category;
+import com.bookstore.mapper.CategoryMapper;
 import com.bookstore.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,35 +15,47 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
-    public List<Category> getAllCategories(){
-        return categoryRepository.findAll();
+    public List<CategoryResponse> getAllCategories(){
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream().map(categoryMapper::toDto).toList();
     }
 
     @Override
-    public Category getCategoryById(Integer id) {
-        return categoryRepository.findById(id).orElse(null);
+    public CategoryResponse getCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No category with id: " + id));
+        return categoryMapper.toDto(category);
     }
 
     @Override
-    public Category createCategory(Category category){
-        return categoryRepository.save(category);
+    public CategoryResponse createCategory(CategoryRequest category){
+        Category newCategory = categoryMapper.toEntity(category);
+
+        Category savedCategory = categoryRepository.save(newCategory);
+
+        return categoryMapper.toDto(savedCategory);
     }
 
     @Override
-    public Category updateCategory(Integer id, Category category) {
+    public CategoryResponse updateCategory(Long id, CategoryRequest categoryRequest) {
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No category with id: " + id));
 
-        existingCategory.setName(category.getName());
-        existingCategory.setDescription(category.getDescription());
+        categoryMapper.updateCategoryFromRequest(categoryRequest, existingCategory);
+        Category updatedCategory = categoryRepository.save(existingCategory);
 
-        return categoryRepository.save(existingCategory);
+        return categoryMapper.toDto(updatedCategory);
     }
 
     @Override
-    public void deleteCategory(Integer id) {
+    public void deleteCategory(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new RuntimeException("No category with id: " + id);
+        }
+
         categoryRepository.deleteById(id);
     }
 
