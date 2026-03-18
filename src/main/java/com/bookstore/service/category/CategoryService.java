@@ -2,7 +2,6 @@ package com.bookstore.service.category;
 
 import com.bookstore.dto.Category.CategoryRequest;
 import com.bookstore.dto.Category.CategoryResponse;
-import com.bookstore.entity.Category;
 
 import java.util.List;
 

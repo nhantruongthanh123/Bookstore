@@ -31,8 +31,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse createCategory(CategoryRequest category){
-        Category newCategory = categoryMapper.toEntity(category);
+    public CategoryResponse createCategory(CategoryRequest categoryRequest){
+        Category newCategory = categoryMapper.toEntity(categoryRequest);
 
         Category savedCategory = categoryRepository.save(newCategory);
 
@@ -45,6 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new RuntimeException("No category with id: " + id));
 
         categoryMapper.updateCategoryFromRequest(categoryRequest, existingCategory);
+
         Category updatedCategory = categoryRepository.save(existingCategory);
 
         return categoryMapper.toDto(updatedCategory);

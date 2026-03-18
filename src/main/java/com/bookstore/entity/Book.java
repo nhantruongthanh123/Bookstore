@@ -1,7 +1,6 @@
 package com.bookstore.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +30,6 @@ public class Book {
     private String isbn;
 
     @ManyToMany
-    @JsonManagedReference
     @JoinTable(
         name = "book_category",
         joinColumns = @JoinColumn(name = "book_id"),

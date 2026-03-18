@@ -1,14 +1,11 @@
 package com.bookstore.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -25,9 +22,4 @@ public class Category {
 
     @Column(nullable = false)
     private String description;
-
-    @ManyToMany(mappedBy = "categories")
-    @JsonBackReference
-    private Set<Book> books = new HashSet<>();
-
 }
