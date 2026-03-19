@@ -4,6 +4,7 @@ import com.bookstore.dto.Book.BookRequest;
 import com.bookstore.dto.Book.BookResponse;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
+import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.mapper.BookMapper;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.CategoryRepository;
@@ -30,7 +31,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse getBookById(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No book with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
 
         return bookMapper.toDto(book);
     }
@@ -50,7 +51,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse updateBook(Long id, BookRequest bookRequest){
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No book with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
 
         bookMapper.updateBookFromRequest(bookRequest, existingBook);
         Set<Category> categories = new java.util.HashSet<>(categoryRepository.findAllById(bookRequest.categoryIds()));
@@ -64,7 +65,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
-            throw new RuntimeException("No book with id: " + id);
+            throw new ResourceNotFoundException("No book with id: " + id);
         }
         bookRepository.deleteById(id);
     }

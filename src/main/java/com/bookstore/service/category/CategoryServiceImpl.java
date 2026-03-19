@@ -4,6 +4,7 @@ package com.bookstore.service.category;
 import com.bookstore.dto.Category.CategoryRequest;
 import com.bookstore.dto.Category.CategoryResponse;
 import com.bookstore.entity.Category;
+import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.mapper.CategoryMapper;
 import com.bookstore.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No category with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No category with id: " + id));
         return categoryMapper.toDto(category);
     }
 
@@ -42,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse updateCategory(Long id, CategoryRequest categoryRequest) {
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No category with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No category with id: " + id));
 
         categoryMapper.updateCategoryFromRequest(categoryRequest, existingCategory);
 
@@ -54,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Long id) {
         if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("No category with id: " + id);
+            throw new ResourceNotFoundException("No category with id: " + id);
         }
 
         categoryRepository.deleteById(id);
