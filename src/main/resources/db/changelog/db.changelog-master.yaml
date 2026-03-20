@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/changes/002-create-book-tables.yaml
   - include:
       file: db/changelog/changes/003-create-book-category-table.yaml
+  - include:
+      file: db/changelog/changes/004-insert-sample-datas.yaml

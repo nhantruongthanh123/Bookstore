@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-insert-sample-data
+      author: nhan
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: name, value: 'Programming' }
+              - column: { name: description, value: 'Software engineering, web and mobile app development books' }
+        - insert:
+            tableName: categories
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: name, value: 'Business & Economics' }
+              - column: { name: description, value: 'Business, finance, management and investment books' }
+
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: title, value: 'Clean Code' }
+              - column: { name: author, value: 'Robert C. Martin' }
+              - column: { name: publisher, value: 'Prentice Hall' }
+              - column: { name: price, valueNumeric: 450000 }
+              - column: { name: isbn, value: '978-0132350884' }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: title, value: 'Spring Boot 3 in Action' }
+              - column: { name: author, value: 'Craig Walls' }
+              - column: { name: publisher, value: 'Manning' }
+              - column: { name: price, valueNumeric: 550000 }
+              - column: { name: isbn, value: '978-1617292545' }
+
+        - insert:
+            tableName: book_category
+            columns:
+              - column: { name: book_id, valueNumeric: 1 }
+              - column: { name: category_id, valueNumeric: 1 }
+        - insert:
+            tableName: book_category
+            columns:
+              - column: { name: book_id, valueNumeric: 2 }
+              - column: { name: category_id, valueNumeric: 1 }
