@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-
     @EntityGraph(attributePaths = {"categories"})
     @NonNull
     @Override

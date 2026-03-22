@@ -7,3 +7,9 @@ databaseChangeLog:
       file: db/changelog/changes/003-create-book-category-table.yaml
   - include:
       file: db/changelog/changes/004-insert-sample-datas.yaml
+  - include:
+      file: db/changelog/changes/005-create-role-tables.yaml
+  - include:
+      file: db/changelog/changes/006-create-user-tables.yaml
+  - include:
+      file: db/changelog/changes/007-create-user-role-tables.yaml
