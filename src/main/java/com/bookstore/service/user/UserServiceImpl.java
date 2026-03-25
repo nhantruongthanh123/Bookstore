@@ -1,0 +1,54 @@
+package com.bookstore.service.user;
+
+import com.bookstore.dto.Auth.RegisterRequest;
+import com.bookstore.entity.Role;
+import com.bookstore.entity.User;
+import com.bookstore.repository.RoleRepository;
+import com.bookstore.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public User createUser(RegisterRequest registerRequest) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new RuntimeException("Username is already in use");
+        }
+        if (userRepository.existsByEmail(registerRequest.getUsername())) {
+            throw new RuntimeException("Email is already in use");
+        }
+
+        Role userRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Role is not found"));
+
+        Set<Role> userRoles = new HashSet<>();
+        userRoles.add(userRole);
+
+        User newUser = new User();
+        newUser.setUsername(registerRequest.getUsername());
+        newUser.setEmail(registerRequest.getEmail());
+        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword())); // Băm pass tại đây!
+        newUser.setFullName(registerRequest.getFullName());
+        newUser.setPhoneNumber(registerRequest.getPhoneNumber());
+        newUser.setRoles(userRoles);
+
+        return userRepository.save(newUser);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+}
