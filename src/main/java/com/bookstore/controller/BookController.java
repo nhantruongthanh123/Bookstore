@@ -5,6 +5,7 @@ import com.bookstore.dto.Book.BookResponse;
 
 import com.bookstore.service.book.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,15 +28,18 @@ public class BookController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public BookResponse createBook(@RequestBody BookRequest book){
         return bookService.createBook(book);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public BookResponse updateBook(@RequestBody BookRequest book, @PathVariable Long id){
         return  bookService.updateBook(id, book);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable Long id){
 

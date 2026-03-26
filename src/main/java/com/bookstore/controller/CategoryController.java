@@ -5,6 +5,7 @@ import com.bookstore.dto.Category.CategoryRequest;
 import com.bookstore.dto.Category.CategoryResponse;
 import com.bookstore.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,16 +27,19 @@ public class CategoryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(@RequestBody CategoryRequest category) {
         return categoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse updateCategory(@PathVariable Long id, @RequestBody CategoryRequest category) {
         return categoryService.updateCategory(id, category);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
     }

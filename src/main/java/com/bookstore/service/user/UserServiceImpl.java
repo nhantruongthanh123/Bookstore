@@ -3,6 +3,7 @@ package com.bookstore.service.user;
 import com.bookstore.dto.Auth.RegisterRequest;
 import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
+import com.bookstore.exception.DuplicateResourceException;
 import com.bookstore.repository.RoleRepository;
 import com.bookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new RuntimeException("Username is already in use");
+            throw new DuplicateResourceException("Username is already in use");
         }
         if (userRepository.existsByEmail(registerRequest.getUsername())) {
-            throw new RuntimeException("Email is already in use");
+            throw new DuplicateResourceException("Email is already in use");
         }
 
         Role userRole = roleRepository.findByName("ROLE_USER")

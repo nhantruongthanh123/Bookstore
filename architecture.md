@@ -327,6 +327,49 @@ spring.docker.compose.lifecycle-management=start-and-stop
 
 ---
 
+## 📂 Database Migrations (Liquibase)
+
+The database schema is version-controlled using **Liquibase** changesets. All migrations are located in:
+```
+src/main/resources/db/changelog/changes/
+```
+
+### Migration Changelog Sequence
+
+| Order | File | Description |
+|-------|------|-------------|
+| 1 | `001-create-category-tables.yaml` | Creates `categories` table |
+| 2 | `002-create-book-tables.yaml` | Creates `books` table |
+| 3 | `003-create-book-category-table.yaml` | Creates `book_category` join table (Many-to-Many) |
+| 4 | `004-insert-sample-datas.yaml` | Inserts sample books and categories data |
+| 5 | `005-create-role-tables.yaml` | Creates `roles` table |
+| 6 | `006-create-user-tables.yaml` | Creates `users` table with auth fields |
+| 7 | `007-create-user-role-tables.yaml` | Creates `user_roles` join table (Many-to-Many) |
+| 8 | `008-insert-roles-data.yaml` | Inserts default roles: ROLE_USER, ROLE_ADMIN |
+
+### Key Features
+- **Automatic Execution:** Liquibase runs on application startup
+- **Version Control:** Each changeset has unique ID and author
+- **Rollback Support:** Database changes can be rolled back
+- **Database Agnostic:** Works across different databases
+- **Validation Mode:** `ddl-auto=validate` ensures schema matches entities
+
+### Master Changelog
+```yaml
+# db/changelog/db.changelog-master.yaml
+databaseChangeLog:
+  - include: file: db/changelog/changes/001-create-category-tables.yaml
+  - include: file: db/changelog/changes/002-create-book-tables.yaml
+  - include: file: db/changelog/changes/003-create-book-category-table.yaml
+  - include: file: db/changelog/changes/004-insert-sample-datas.yaml
+  - include: file: db/changelog/changes/005-create-role-tables.yaml
+  - include: file: db/changelog/changes/006-create-user-tables.yaml
+  - include: file: db/changelog/changes/007-create-user-role-tables.yaml
+  - include: file: db/changelog/changes/008-insert-roles-data.yaml
+```
+
+---
+
 ## 🎯 Design Patterns Used
 
 1. **Layered Architecture**
@@ -485,11 +528,12 @@ src/test/java/
 
 ## 🔮 Future Enhancements (Potential)
 
+- [x] ~~Add role-based access control (RBAC)~~ ✅ **Implemented** (ROLE_USER, ROLE_ADMIN)
 - [ ] Add pagination and sorting for list endpoints
 - [ ] Implement Redis caching for frequently accessed data
 - [ ] Add API documentation with Swagger/OpenAPI
 - [ ] Implement refresh token mechanism
-- [ ] Add role-based access control (RBAC) for endpoints
+- [ ] Implement role-based authorization on specific endpoints
 - [ ] Implement file upload for book covers
 - [ ] Add comprehensive unit and integration tests
 - [ ] Implement CI/CD pipeline
@@ -506,4 +550,4 @@ src/test/java/
 
 ---
 
-*Last Updated: March 24, 2026*
+*Last Updated: March 25, 2026*
