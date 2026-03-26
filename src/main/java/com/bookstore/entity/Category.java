@@ -22,4 +22,7 @@ public class Category {
 
     @Column(nullable = false)
     private String description;
+
+    @Column(columnDefinition = "TINYINT(1)", nullable = false)
+    private boolean isDeleted;
 }

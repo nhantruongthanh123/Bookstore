@@ -8,5 +8,7 @@ public record BookRequest(
         String publisher,
         double price,
         String isbn,
+        String description,
+        String cover_image,
         Set<Long> categoryIds
 ) {}

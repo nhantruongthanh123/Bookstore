@@ -25,9 +25,23 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
+    @Column
     private String publisher;
+
+    @Column
     private double price;
+
+    @Column
     private String isbn;
+
+    @Column
+    private String description;
+
+    @Column
+    private String cover_image;
+
+    @Column(columnDefinition = "TINYINT(1)", nullable = false)
+    private boolean isDeleted = false;
 
     @ManyToMany
     @JoinTable(

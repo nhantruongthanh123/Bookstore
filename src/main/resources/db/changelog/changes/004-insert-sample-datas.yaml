@@ -1,47 +1,382 @@
 databaseChangeLog:
   - changeSet:
-      id: 004-insert-sample-data
+      id: 004-insert-sample-datas
       author: nhan
       changes:
         - insert:
             tableName: categories
             columns:
-              - column: { name: id, valueNumeric: 1 }
-              - column: { name: name, value: 'Programming' }
-              - column: { name: description, value: 'Software engineering, web and mobile app development books' }
+              - column:
+                  name: name
+                  value: Fiction
+              - column:
+                  name: description
+                  value: Novels and fictional stories
         - insert:
             tableName: categories
             columns:
-              - column: { name: id, valueNumeric: 2 }
-              - column: { name: name, value: 'Business & Economics' }
-              - column: { name: description, value: 'Business, finance, management and investment books' }
+              - column:
+                  name: name
+                  value: Science
+              - column:
+                  name: description
+                  value: Books about nature, physics, and the universe
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: name
+                  value: History
+              - column:
+                  name: description
+                  value: Books about human history and world events
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: name
+                  value: Information Technology
+              - column:
+                  name: description
+                  value: Programming, software design, and computer science
 
         - insert:
             tableName: books
             columns:
-              - column: { name: id, valueNumeric: 1 }
-              - column: { name: title, value: 'Clean Code' }
-              - column: { name: author, value: 'Robert C. Martin' }
-              - column: { name: publisher, value: 'Prentice Hall' }
-              - column: { name: price, valueNumeric: 450000 }
-              - column: { name: isbn, value: '978-0132350884' }
+              - column:
+                  name: title
+                  value: The Alchemist
+              - column:
+                  name: author
+                  value: Paulo Coelho
+              - column:
+                  name: publisher
+                  value: HarperOne
+              - column:
+                  name: price
+                  value: '15.99'
+              - column:
+                  name: isbn
+                  value: 978-0061122415
+              - column:
+                  name: description
+                  value: A magical story about following your dreams.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/alchemist.jpg
         - insert:
             tableName: books
             columns:
-              - column: { name: id, valueNumeric: 2 }
-              - column: { name: title, value: 'Spring Boot 3 in Action' }
-              - column: { name: author, value: 'Craig Walls' }
-              - column: { name: publisher, value: 'Manning' }
-              - column: { name: price, valueNumeric: 550000 }
-              - column: { name: isbn, value: '978-1617292545' }
+              - column:
+                  name: title
+                  value: Cosmos
+              - column:
+                  name: author
+                  value: Carl Sagan
+              - column:
+                  name: publisher
+                  value: Random House
+              - column:
+                  name: price
+                  value: '22.50'
+              - column:
+                  name: isbn
+                  value: 978-0345331359
+              - column:
+                  name: description
+                  value: A fascinating exploration of the universe and our place in it.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/cosmos.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: Sapiens A Brief History of Humankind
+              - column:
+                  name: author
+                  value: Yuval Noah Harari
+              - column:
+                  name: publisher
+                  value: Harper
+              - column:
+                  name: price
+                  value: '24.99'
+              - column:
+                  name: isbn
+                  value: 978-0062316097
+              - column:
+                  name: description
+                  value: A groundbreaking narrative of humanitys creation and evolution.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/sapiens.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: Clean Code
+              - column:
+                  name: author
+                  value: Robert C. Martin
+              - column:
+                  name: publisher
+                  value: Prentice Hall
+              - column:
+                  name: price
+                  value: '45.00'
+              - column:
+                  name: isbn
+                  value: 978-0132350884
+              - column:
+                  name: description
+                  value: A handbook of agile software craftsmanship.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/clean-code.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: Kane and Abel
+              - column:
+                  name: author
+                  value: Jeffrey Archer
+              - column:
+                  name: publisher
+                  value: St. Martins Press
+              - column:
+                  name: price
+                  value: '18.00'
+              - column:
+                  name: isbn
+                  value: 978-1250320088
+              - column:
+                  name: description
+                  value: An epic tale of two men born on the same day on opposite sides of the world.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/kane-abel.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: A Brief History of Time
+              - column:
+                  name: author
+                  value: Stephen Hawking
+              - column:
+                  name: publisher
+                  value: Bantam Books
+              - column:
+                  name: price
+                  value: '19.99'
+              - column:
+                  name: isbn
+                  value: 978-0553380163
+              - column:
+                  name: description
+                  value: A landmark volume in science writing by one of the great minds of our time.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/brief-history.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: The Art of War
+              - column:
+                  name: author
+                  value: Sun Tzu
+              - column:
+                  name: publisher
+                  value: Shambhala
+              - column:
+                  name: price
+                  value: '12.50'
+              - column:
+                  name: isbn
+                  value: 978-1590302255
+              - column:
+                  name: description
+                  value: Ancient Chinese military treatise dating from the Late Spring and Autumn Period.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/art-of-war.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: Spring in Action
+              - column:
+                  name: author
+                  value: Craig Walls
+              - column:
+                  name: publisher
+                  value: Manning Publications
+              - column:
+                  name: price
+                  value: '55.00'
+              - column:
+                  name: isbn
+                  value: 978-1617291203
+              - column:
+                  name: description
+                  value: A comprehensive guide to the Spring Framework.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/spring-action.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: The Little Prince
+              - column:
+                  name: author
+                  value: Antoine de Saint-Exupery
+              - column:
+                  name: publisher
+                  value: Harcourt, Inc.
+              - column:
+                  name: price
+                  value: '10.99'
+              - column:
+                  name: isbn
+                  value: 978-0156012195
+              - column:
+                  name: description
+                  value: A poetic tale, with watercolor illustrations by the author.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/little-prince.jpg
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: Effective Java
+              - column:
+                  name: author
+                  value: Joshua Bloch
+              - column:
+                  name: publisher
+                  value: Addison-Wesley Professional
+              - column:
+                  name: price
+                  value: '49.99'
+              - column:
+                  name: isbn
+                  value: 978-0134685991
+              - column:
+                  name: description
+                  value: A comprehensive guide to best practices for the Java programming language.
+              - column:
+                  name: cover_image
+                  value: https://example.com/images/effective-java.jpg
 
         - insert:
             tableName: book_category
             columns:
-              - column: { name: book_id, valueNumeric: 1 }
-              - column: { name: category_id, valueNumeric: 1 }
+              - column:
+                  name: book_id
+                  value: '1'
+              - column:
+                  name: category_id
+                  value: '1'
         - insert:
             tableName: book_category
             columns:
-              - column: { name: book_id, valueNumeric: 2 }
-              - column: { name: category_id, valueNumeric: 1 }
+              - column:
+                  name: book_id
+                  value: '2'
+              - column:
+                  name: category_id
+                  value: '2'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '3'
+              - column:
+                  name: category_id
+                  value: '3'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '3'
+              - column:
+                  name: category_id
+                  value: '2'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '4'
+              - column:
+                  name: category_id
+                  value: '4'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '5'
+              - column:
+                  name: category_id
+                  value: '1'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '6'
+              - column:
+                  name: category_id
+                  value: '2'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '7'
+              - column:
+                  name: category_id
+                  value: '3'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '8'
+              - column:
+                  name: category_id
+                  value: '4'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '9'
+              - column:
+                  name: category_id
+                  value: '1'
+        - insert:
+            tableName: book_category
+            columns:
+              - column:
+                  name: book_id
+                  value: '10'
+              - column:
+                  name: category_id
+                  value: '4'
