@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class})
 public interface BookMapper {
-    BookResponse toDto(Book book);
+    BookResponse toResponse(Book book);
     Book toEntity(BookRequest bookRequest);
     void updateBookFromRequest(BookRequest request, @MappingTarget Book book);
 }

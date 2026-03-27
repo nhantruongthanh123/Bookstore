@@ -21,14 +21,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryResponse> getAllCategories(){
         List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map(categoryMapper::toDto).toList();
+        return categories.stream().map(categoryMapper::toResponse).toList();
     }
 
     @Override
     public CategoryResponse getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No category with id: " + id));
-        return categoryMapper.toDto(category);
+        return categoryMapper.toResponse(category);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category savedCategory = categoryRepository.save(newCategory);
 
-        return categoryMapper.toDto(savedCategory);
+        return categoryMapper.toResponse(savedCategory);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category updatedCategory = categoryRepository.save(existingCategory);
 
-        return categoryMapper.toDto(updatedCategory);
+        return categoryMapper.toResponse(updatedCategory);
     }
 
     @Override

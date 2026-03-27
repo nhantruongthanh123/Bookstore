@@ -26,7 +26,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Page<BookResponse> getAllBooks(Pageable pageable) {
         Page<Book> books = bookRepository.findAll(pageable);
-        return books.map(bookMapper::toDto);
+        return books.map(bookMapper::toResponse);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
 
-        return bookMapper.toDto(book);
+        return bookMapper.toResponse(book);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class BookServiceImpl implements BookService {
 
         Book savedBook = bookRepository.save(newBook);
 
-        return bookMapper.toDto(savedBook);
+        return bookMapper.toResponse(savedBook);
     }
 
     @Override
@@ -54,13 +54,13 @@ public class BookServiceImpl implements BookService {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
 
-        bookMapper. updateBookFromRequest(bookRequest, existingBook);
+        bookMapper.updateBookFromRequest(bookRequest, existingBook);
         Set<Category> categories = new java.util.HashSet<>(categoryRepository.findAllById(bookRequest.categoryIds()));
         existingBook.setCategories(categories);
 
         Book updatedBook = bookRepository.save(existingBook);
 
-        return bookMapper.toDto(updatedBook);
+        return bookMapper.toResponse(updatedBook);
     }
 
     @Override

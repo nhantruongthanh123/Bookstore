@@ -355,17 +355,26 @@ src/main/resources/db/changelog/changes/
 - **Validation Mode:** `ddl-auto=validate` ensures schema matches entities
 
 ### Master Changelog
+
 ```yaml
 # db/changelog/db.changelog-master.yaml
 databaseChangeLog:
-  - include: file: db/changelog/changes/001-create-category-tables.yaml
-  - include: file: db/changelog/changes/002-create-book-tables.yaml
-  - include: file: db/changelog/changes/003-create-book-category-table.yaml
-  - include: file: db/changelog/changes/004-insert-sample-datas.yaml
-  - include: file: db/changelog/changes/005-create-role-tables.yaml
-  - include: file: db/changelog/changes/006-create-user-tables.yaml
-  - include: file: db/changelog/changes/007-create-user-role-tables.yaml
-  - include: file: db/changelog/changes/008-insert-roles-data.yaml
+  - include:
+      file: db/changelog/changes/001-create-category-table.yaml
+  - include:
+      file: db/changelog/changes/002-create-book-table.yaml
+  - include:
+      file: db/changelog/changes/003-create-book-category-table.yaml
+  - include:
+      file: db/changelog/changes/004-insert-sample-datas.yaml
+  - include:
+      file: db/changelog/changes/005-create-role-table.yaml
+  - include:
+      file: db/changelog/changes/006-create-user-table.yaml
+  - include:
+      file: db/changelog/changes/007-create-user-role-table.yaml
+  - include:
+      file: db/changelog/changes/008-insert-roles-data.yaml
 ```
 
 ---

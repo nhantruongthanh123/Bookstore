@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 03-create-book-category-table
+      id: 003-create-book-category-table
       author: nhan
       changes:
         - createTable:
