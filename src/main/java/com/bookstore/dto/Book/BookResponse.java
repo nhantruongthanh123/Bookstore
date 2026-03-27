@@ -11,5 +11,8 @@ public record BookResponse(
         String publisher,
         double price,
         String isbn,
+        String description,
+        String coverImage,
+        Integer quantity,
         Set<CategoryResponse> categories
 ) {}

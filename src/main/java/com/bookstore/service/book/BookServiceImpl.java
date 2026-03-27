@@ -9,9 +9,10 @@ import com.bookstore.mapper.BookMapper;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -23,9 +24,9 @@ public class BookServiceImpl implements BookService {
 
 
     @Override
-    public List<BookResponse> getAllBooks() {
-        List<Book> books = bookRepository.findAll();
-        return books.stream().map(bookMapper::toDto).toList();
+    public Page<BookResponse> getAllBooks(Pageable pageable) {
+        Page<Book> books = bookRepository.findAll(pageable);
+        return books.map(bookMapper::toDto);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class BookServiceImpl implements BookService {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
 
-        bookMapper.updateBookFromRequest(bookRequest, existingBook);
+        bookMapper. updateBookFromRequest(bookRequest, existingBook);
         Set<Category> categories = new java.util.HashSet<>(categoryRepository.findAllById(bookRequest.categoryIds()));
         existingBook.setCategories(categories);
 

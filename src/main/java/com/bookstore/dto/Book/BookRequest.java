@@ -10,5 +10,6 @@ public record BookRequest(
         String isbn,
         String description,
         String cover_image,
+        Integer quantity,
         Set<Long> categoryIds
 ) {}

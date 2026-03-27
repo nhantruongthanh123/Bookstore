@@ -1,6 +1,7 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    @Size(min = 6, max = 30, message = "Password must length from 6 to 60 characters.")
     private String password;
 
     @Column(nullable = false)

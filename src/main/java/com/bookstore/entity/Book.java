@@ -43,6 +43,9 @@ public class Book {
     @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isDeleted = false;
 
+    @Column(nullable = false)
+    private Integer quantity;
+
     @ManyToMany
     @JoinTable(
         name = "book_category",

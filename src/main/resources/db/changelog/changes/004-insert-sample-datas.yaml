@@ -64,6 +64,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/alchemist.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -88,6 +91,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/cosmos.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -112,6 +118,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/sapiens.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -136,6 +145,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/clean-code.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -160,6 +172,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/kane-abel.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -184,6 +199,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/brief-history.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -208,6 +226,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/art-of-war.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -232,6 +253,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/spring-action.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -256,6 +280,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/little-prince.jpg
+              - column:
+                  name: quantity
+                  value: '10'
         - insert:
             tableName: books
             columns:
@@ -280,6 +307,9 @@ databaseChangeLog:
               - column:
                   name: cover_image
                   value: https://example.com/images/effective-java.jpg
+              - column:
+                  name: quantity
+                  value: '10'
 
         - insert:
             tableName: book_category
