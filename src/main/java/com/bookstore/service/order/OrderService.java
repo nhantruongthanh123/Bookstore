@@ -10,9 +10,10 @@ import java.util.List;
 
 public interface OrderService {
     OrderResponse placeOrder(Long userId, OrderRequest request);
-    OrderResponse getOrderById(Long orderId);
+    OrderResponse getOrderById(Long orderId, Long userId);
+    OrderResponse getOrderByIdAdmin(Long orderId);
     OrderResponse cancelOrder(Long orderId, Long userId);
-    OrderResponse getOrderHistory(Long userId);
+    List<OrderResponse> getOrderHistory(Long userId);
     // List<OrderResponse> searchOrders(OrderSearchRequest searchParams)
 
     Page<OrderResponse> findAll(Pageable pageable);
