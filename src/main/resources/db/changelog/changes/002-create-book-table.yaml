@@ -27,7 +27,7 @@ databaseChangeLog:
                   type: VARCHAR(255)
               - column:
                   name: price
-                  type: DOUBLE
+                  type: DECIMAL(10, 2)
               - column:
                   name: isbn
                   type: VARCHAR(255)

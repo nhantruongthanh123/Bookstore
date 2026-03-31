@@ -4,6 +4,7 @@ import com.bookstore.dto.Book.BookRequest;
 import com.bookstore.dto.Book.BookResponse;
 
 import com.bookstore.service.book.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,13 +33,13 @@ public class BookController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BookResponse> createBook(@RequestBody BookRequest book){
+    public ResponseEntity<BookResponse> createBook(@RequestBody @Valid BookRequest book){
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(book));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BookResponse> updateBook(@RequestBody BookRequest book, @PathVariable Long id){
+    public ResponseEntity<BookResponse> updateBook(@RequestBody @Valid BookRequest book, @PathVariable Long id){
         return ResponseEntity.ok(bookService.updateBook(id, book));
     }
 

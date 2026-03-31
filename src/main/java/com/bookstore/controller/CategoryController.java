@@ -4,6 +4,7 @@ package com.bookstore.controller;
 import com.bookstore.dto.Category.CategoryRequest;
 import com.bookstore.dto.Category.CategoryResponse;
 import com.bookstore.service.category.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,13 @@ public class CategoryController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryResponse createCategory(@RequestBody CategoryRequest category) {
+    public CategoryResponse createCategory(@RequestBody @Valid CategoryRequest category) {
         return categoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryResponse updateCategory(@PathVariable Long id, @RequestBody CategoryRequest category) {
+    public CategoryResponse updateCategory(@PathVariable Long id, @RequestBody @Valid CategoryRequest category) {
         return categoryService.updateCategory(id, category);
     }
 

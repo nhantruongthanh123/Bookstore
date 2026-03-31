@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,34 +38,35 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.PENDING);
-        order.setShippingAddress(request.getShippingAddress());
-        order.setPhoneNumber(request.getPhoneNumber());
+        order.setShippingAddress(request.shippingAddress());
+        order.setPhoneNumber(request.phoneNumber());
 
-        double totalAmount = 0.0;
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
-        for (OrderItemRequest itemReq : request.getItems()) {
-            Book book = bookRepository.findById(itemReq.getBookId())
+        for (OrderItemRequest itemReq : request.items()) {
+            Book book = bookRepository.findById(itemReq.bookId())
                     .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
-            if (book.getQuantity() < itemReq.getQuantity()) {
+            if (book.getQuantity() < itemReq.quantity()) {
                 throw new RuntimeException("We don't have enough items in this order (" +  book.getQuantity() + " left)");
             }
 
             OrderItem orderItem = new OrderItem();
             orderItem.setBook(book);
-            orderItem.setQuantity(itemReq.getQuantity());
+            orderItem.setQuantity(itemReq.quantity());
             orderItem.setPrice(book.getPrice());
             orderItem.setOrder(order);
 
             order.getOrderItems().add(orderItem);
 
-            double subTotal = book.getPrice() * itemReq.getQuantity();
-            totalAmount += subTotal;
+            BigDecimal subTotal = book.getPrice().multiply(BigDecimal.valueOf(itemReq.quantity()));
+            totalAmount = totalAmount.add(subTotal);
 
-            book.setQuantity(book.getQuantity() - itemReq.getQuantity());
+            book.setQuantity(book.getQuantity() - itemReq.quantity());
             bookRepository.save(book);
         }
-        totalAmount = Math.round(totalAmount * 100.0) / 100.0;
+        
+        totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
         order.setTotalAmount(totalAmount);
         Order savedOrder = orderRepository.save(order);
 

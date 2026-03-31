@@ -3,6 +3,7 @@ package com.bookstore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,8 +25,10 @@ public class Order {
 
     @Column
     private LocalDateTime orderDate;
-    @Column
-    private double totalAmount;
+    
+    @Column(precision = 10, scale = 2)
+    private BigDecimal totalAmount;
+    
     @Column
     @Enumerated(EnumType.STRING)
     private OrderStatus status;

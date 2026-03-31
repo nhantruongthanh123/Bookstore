@@ -22,10 +22,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+        if (userRepository.existsByUsername(registerRequest.username())) {
             throw new DuplicateResourceException("Username is already in use");
         }
-        if (userRepository.existsByEmail(registerRequest.getUsername())) {
+        if (userRepository.existsByEmail(registerRequest.email())) {
             throw new DuplicateResourceException("Email is already in use");
         }
 
@@ -36,11 +36,11 @@ public class UserServiceImpl implements UserService {
         userRoles.add(userRole);
 
         User newUser = new User();
-        newUser.setUsername(registerRequest.getUsername());
-        newUser.setEmail(registerRequest.getEmail());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword())); // Băm pass tại đây!
-        newUser.setFullName(registerRequest.getFullName());
-        newUser.setPhoneNumber(registerRequest.getPhoneNumber());
+        newUser.setUsername(registerRequest.username());
+        newUser.setEmail(registerRequest.email());
+        newUser.setPassword(passwordEncoder.encode(registerRequest.password())); // Băm pass tại đây!
+        newUser.setFullName(registerRequest.fullName());
+        newUser.setPhoneNumber(registerRequest.phoneNumber());
         newUser.setRoles(userRoles);
 
         return userRepository.save(newUser);

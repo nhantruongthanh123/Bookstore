@@ -1,9 +1,13 @@
 package com.bookstore.dto.OrderItem;
 
-import lombok.Data;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
-@Data
-public class OrderItemRequest {
-    private Long bookId;
-    private Integer quantity;
-}
+public record OrderItemRequest(
+        @NotNull(message = "Book ID is required")
+        Long bookId,
+
+        @NotNull(message = "Quantity is required")
+        @Min(value = 1, message = "Quantity must be at least 1")
+        Integer quantity
+) {}

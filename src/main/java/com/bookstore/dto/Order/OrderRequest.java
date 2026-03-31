@@ -1,13 +1,20 @@
 package com.bookstore.dto.Order;
 
 import com.bookstore.dto.OrderItem.OrderItemRequest;
-import lombok.Data;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
-import java.util.List;
+import java.util.Set;
 
-@Data
-public class OrderRequest {
-    private String shippingAddress;
-    private String phoneNumber;
-    private List<OrderItemRequest> items;
-}
+public record OrderRequest(
+        @NotBlank(message = "Shipping address is required")
+        String shippingAddress,
+
+        @NotBlank(message = "Phone number is required")
+        String phoneNumber,
+
+        @NotEmpty(message = "Order must contain at least one item")
+        @Valid
+        Set<OrderItemRequest> items
+) {}

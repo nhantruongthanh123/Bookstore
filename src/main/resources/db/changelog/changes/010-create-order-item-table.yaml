@@ -33,6 +33,6 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: price
-                  type: DOUBLE
+                  type: DECIMAL(10, 2)
                   constraints:
                     nullable: false

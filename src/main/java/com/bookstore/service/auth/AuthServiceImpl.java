@@ -35,12 +35,12 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
+                        loginRequest.username(),
+                        loginRequest.password()
                 )
         );
 
-        User user = userService.findByUsername(loginRequest.getUsername());
+        User user = userService.findByUsername(loginRequest.username());
         return generateAuthResponse(user);
     }
 

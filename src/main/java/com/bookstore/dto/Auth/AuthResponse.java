@@ -1,19 +1,21 @@
 package com.bookstore.dto.Auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class AuthResponse {
-    private String token;
-    private String type = "Bearer";
-    private Long id;
-    private String username;
-    private String email;
-    private Set<String> roles;
+public record AuthResponse(
+        String token,
+        String type,
+        Long id,
+        String username,
+        String email,
+        Set<String> roles
+) {
+    public AuthResponse(String token, String type, Long id, String username, String email, Set<String> roles) {
+        this.token = token;
+        this.type = type != null ? type : "Bearer";
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.roles = roles;
+    }
 }

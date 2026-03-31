@@ -3,6 +3,8 @@ package com.bookstore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 
 @Getter
 @Setter
@@ -25,7 +27,9 @@ public class OrderItem {
     private Book book;
 
     private Integer quantity;
-    private double price;
+    
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
 
     @Override
     public boolean equals(Object o) {

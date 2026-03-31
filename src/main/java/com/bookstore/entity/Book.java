@@ -4,6 +4,7 @@ package com.bookstore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,8 +28,8 @@ public class Book {
     @Column
     private String publisher;
 
-    @Column
-    private double price;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
 
     @Column
     private String isbn;
@@ -37,7 +38,7 @@ public class Book {
     private String description;
 
     @Column
-    private String cover_image;
+    private String coverImage;
 
     @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isDeleted = false;

@@ -2,6 +2,7 @@ package com.bookstore.dto.Book;
 
 import com.bookstore.dto.Category.CategoryResponse;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 public record BookResponse(
@@ -9,7 +10,7 @@ public record BookResponse(
         String title,
         String author,
         String publisher,
-        double price,
+        BigDecimal price,
         String isbn,
         String description,
         String coverImage,
