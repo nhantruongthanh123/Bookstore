@@ -1,35 +1,34 @@
 package com.bookstore.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="categories")
-public class Category {
+@Table(name = "carts")
+public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(nullable = false)
-    private String description;
-
-    @Column(columnDefinition = "TINYINT(1)", nullable = false)
-    private boolean isDeleted;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartItem> items = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Category category)) return false;
-        return id != null && id.equals(category.getId());
+        if (!(o instanceof Cart cart)) return false;
+        return id != null && id.equals(cart.getId());
     }
 
     @Override

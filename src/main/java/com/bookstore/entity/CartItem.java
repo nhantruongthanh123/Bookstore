@@ -3,35 +3,31 @@ package com.bookstore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name="order_items")
-public class OrderItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name="cart_items")
+public class CartItem {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    @ToString.Exclude
-    private Order order;
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
 
     private Integer quantity;
-    private double price;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OrderItem orderItem)) return false;
-        return id != null && id.equals(orderItem.getId());
+        if (!(o instanceof CartItem cartItem)) return false;
+        return id != null && id.equals(cartItem.getId());
     }
 
     @Override
