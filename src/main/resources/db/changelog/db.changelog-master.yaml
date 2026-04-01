@@ -21,4 +21,5 @@ databaseChangeLog:
       file: db/changeLog/changes/010-create-order-item-table.yaml
   - include:
       file: db/changelog/changes/011-create-cart-and-cartitem-tables.yaml
-
+  - include:
+      file: db/changelog/changes/012-create-refresh-token-table.yaml

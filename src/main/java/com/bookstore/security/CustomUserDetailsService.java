@@ -22,25 +22,22 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @NonNull
-    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Can't find user with username: " + username));
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        User user;
+        if (usernameOrEmail.contains("@")) {
+            user = userRepository.findByEmail(usernameOrEmail)
+                    .orElseThrow(() -> new UsernameNotFoundException("Can't find user with email: " + usernameOrEmail));
+        } else {
+            user = userRepository.findByUsername(usernameOrEmail)
+                    .orElseThrow(() -> new UsernameNotFoundException("Can't find user with email: " + usernameOrEmail));
+        }
 
-        Collection<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
-
-        return new CustomUserDetails(
-                user.getId(),
+        return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getEnabled(),
-                true,
-                true,
-                user.getAccountNonLocked(),
-                authorities
+                user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName()))
+                        .collect(Collectors.toList())
         );
     }
 }

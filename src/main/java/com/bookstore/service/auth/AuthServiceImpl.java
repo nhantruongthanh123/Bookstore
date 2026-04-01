@@ -42,12 +42,17 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.username(),
+                        loginRequest.usernameOrEmail(),
                         loginRequest.password()
                 )
         );
 
-        User user = userService.findByUsername(loginRequest.username());
+        User user;
+        if (loginRequest.usernameOrEmail().contains("@")) {
+            user = userService.findByEmail(loginRequest.usernameOrEmail());
+        } else {
+            user = userService.findByUsername(loginRequest.usernameOrEmail());
+        }
         return generateAuthResponse(user);
     }
 

@@ -2,6 +2,8 @@ package com.bookstore.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import java.sql.Types;
 import java.time.Instant;
 
 @Entity
@@ -26,7 +28,9 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiryDate;
 
-    private boolean revoked;
+    @Column(nullable = false)
+    @JdbcTypeCode(Types.TINYINT)
+    private boolean revoked = false;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -34,5 +38,18 @@ public class RefreshToken {
     @PrePersist
     protected void onCreate() {
         this.createdAt = Instant.now();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RefreshToken that = (RefreshToken) o;
+        return token != null && token.equals(that.token);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

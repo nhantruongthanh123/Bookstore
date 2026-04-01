@@ -3,8 +3,10 @@ package com.bookstore.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +42,8 @@ public class Book {
     @Column
     private String coverImage;
 
-    @Column(columnDefinition = "TINYINT(1)", nullable = false)
+    @Column(nullable = false)
+    @JdbcTypeCode(Types.TINYINT)
     private boolean isDeleted = false;
 
     @Column(nullable = false)

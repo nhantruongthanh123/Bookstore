@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,10 +48,12 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(nullable = false)
+    @JdbcTypeCode(Types.TINYINT)
     private Boolean enabled = true;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(nullable = false)
+    @JdbcTypeCode(Types.TINYINT)
     private Boolean accountNonLocked = true;
 
     @CreationTimestamp

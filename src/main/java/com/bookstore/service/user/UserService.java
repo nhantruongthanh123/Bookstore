@@ -7,4 +7,5 @@ public interface UserService {
     User createUser(RegisterRequest registerRequest);
 
     User findByUsername(String username);
+    User findByEmail(String email);
 }

@@ -3,6 +3,9 @@ package com.bookstore.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
 
 
 @Getter
@@ -22,8 +25,9 @@ public class Category {
     @Column(nullable = false)
     private String description;
 
-    @Column(columnDefinition = "TINYINT(1)", nullable = false)
-    private boolean isDeleted;
+    @Column(nullable = false)
+    @JdbcTypeCode(Types.TINYINT)
+    private boolean isDeleted = false;
 
     @Override
     public boolean equals(Object o) {
