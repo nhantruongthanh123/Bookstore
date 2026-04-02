@@ -35,8 +35,11 @@ public class AuthenticationUtil {
         }
         
         Object principal = authentication.getPrincipal();
-        if (principal instanceof CustomUserDetails) {
-            return ((CustomUserDetails) principal).getId();
+        if (principal instanceof UserPrincipal userPrincipal) {
+            return userPrincipal.getUser().getId();
+        }
+        if (principal instanceof String && principal.equals("anonymousUser")) {
+            throw new RuntimeException("User is anonymous");
         }
         
         throw new RuntimeException("Unable to get user ID from authentication");
@@ -44,11 +47,11 @@ public class AuthenticationUtil {
 
     public static boolean hasRole(String roleName) {
         Authentication authentication = getAuthentication();
-        if (authentication == null) {
+        if (authentication == null || roleName == null) {
             return false;
         }
         return authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(roleName));
+                .anyMatch(grantedAuthority -> roleName.equals(grantedAuthority.getAuthority()));
     }
 }
 

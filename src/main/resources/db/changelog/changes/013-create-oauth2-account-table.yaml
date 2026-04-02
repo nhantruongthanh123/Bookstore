@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-create-oauth2-account-table
+      author: nhan
+      changes:
+        - createTable:
+            tableName: oauth2_users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_oauth2_user_user
+                    references: users(id)
+              - column:
+                  name: provider
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_user_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - addUniqueConstraint:
+            constraintName: uk_oauth2_user_provider
+            tableName: oauth2_users
+            columnNames: provider, provider_user_id

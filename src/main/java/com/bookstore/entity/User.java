@@ -31,13 +31,13 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @Size(min = 6, max = 30, message = "Password must length from 6 to 60 characters.")
+    @Size(min = 6, max = 255, message = "Password must length from 6 to 60 characters.")
     private String password;
 
     @Column(nullable = false)
     private String fullName;
 
-    @Column(nullable=false)
+    @Column
     private String phoneNumber;
 
     @ManyToMany(fetch = FetchType.EAGER)

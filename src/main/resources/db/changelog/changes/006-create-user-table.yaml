@@ -37,8 +37,6 @@ databaseChangeLog:
               - column:
                   name: phone_number
                   type: VARCHAR(15)
-                  constraints:
-                    nullable: false
               - column:
                   name: enabled
                   type: BOOLEAN
