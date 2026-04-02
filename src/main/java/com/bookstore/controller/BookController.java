@@ -3,16 +3,19 @@ package com.bookstore.controller;
 import com.bookstore.dto.Book.BookRequest;
 import com.bookstore.dto.Book.BookResponse;
 
+import com.bookstore.dto.Book.SearchBookRequest;
 import com.bookstore.service.book.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 
 
 @RestController
@@ -22,7 +25,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<Page<BookResponse>> getAllBooks(Pageable pageable){
+    public ResponseEntity<Page<BookResponse>> getAllBooks(@PageableDefault(size = 4) Pageable pageable){
         return ResponseEntity.ok(bookService.getAllBooks(pageable));
     }
 
@@ -48,5 +51,20 @@ public class BookController {
     public ResponseEntity<Void> deleteBook(@PathVariable Long id){
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<BookResponse>> searchBook(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @PageableDefault(size = 20, sort = "title") Pageable pageable
+    ){
+        SearchBookRequest request = new SearchBookRequest(title, author, category, minPrice, maxPrice);
+
+        Page<BookResponse> books = bookService.searchBooks(request, pageable);
+        return ResponseEntity.ok(books);
     }
 }

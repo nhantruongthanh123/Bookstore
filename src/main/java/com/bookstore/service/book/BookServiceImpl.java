@@ -2,15 +2,18 @@ package com.bookstore.service.book;
 
 import com.bookstore.dto.Book.BookRequest;
 import com.bookstore.dto.Book.BookResponse;
+import com.bookstore.dto.Book.SearchBookRequest;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
 import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.mapper.BookMapper;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.CategoryRepository;
+import com.bookstore.repository.spec.BookSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -69,5 +72,18 @@ public class BookServiceImpl implements BookService {
             throw new ResourceNotFoundException("No book with id: " + id);
         }
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<BookResponse> searchBooks(SearchBookRequest request, Pageable pageable){
+        Specification<Book> spec = Specification.where(BookSpecification.isNotDeleted())
+                .and(BookSpecification.hasTitle(request.title()))
+                .and(BookSpecification.hasAuthor(request.author()))
+                .and(BookSpecification.hasCategory(request.category()))
+                .and(BookSpecification.priceBetween(request.minPrice(),
+                        request.maxPrice()));
+
+        Page<Book> books = bookRepository.findAll(spec, pageable);
+        return books.map(bookMapper::toResponse);
     }
 }
