@@ -44,7 +44,7 @@ public class OpenApiConfig {
                         new Server()
                                 .url("https://api.bookstore.com")
                                 .description("Production Server")))
-//                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
                                 new SecurityScheme()

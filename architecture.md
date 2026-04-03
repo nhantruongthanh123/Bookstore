@@ -849,7 +849,7 @@ src/test/java/
 - [x] ~~Pagination for lists~~ ✅ **Implemented**
 - [x] Add search and filtering for books (by title, author, category, price range) ✅ **Implemented**
 - [ ] Implement Redis caching for frequently accessed data
-- [ ] Add Swagger/OpenAPI documentation
+- [x] Add Swagger/OpenAPI documentation ✅ **Implemented**
 - [ ] Implement file upload for book cover images (currently URL-based)
 - [ ] Add comprehensive unit and integration tests
 - [ ] Implement CI/CD pipeline (GitHub Actions)
@@ -868,7 +868,7 @@ src/test/java/
 
 **Project:** Spring Boot Bookstore API  
 **Academic:** Semester 6 Project (BK)  
-**Technology Stack:** Spring Boot 4.0.4 + MySQL 8.0 + JWT + OAuth2  
+**Technology Stack:** Spring Boot 4.0.4 + MySQL 8.0 + JWT + OAuth2 + Swagger 
 **Architecture:** Layered MVC with Spring Security  
 **Status:** ✅ Production-Ready Implementation Complete
 
