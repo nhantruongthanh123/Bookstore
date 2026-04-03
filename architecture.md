@@ -847,7 +847,7 @@ src/test/java/
 - [x] ~~Order management system~~ ✅ **Implemented**
 - [x] ~~OAuth2 Google integration~~ ✅ **Implemented**
 - [x] ~~Pagination for lists~~ ✅ **Implemented**
-- [ ] Add search and filtering for books (by title, author, category, price range)
+- [x] Add search and filtering for books (by title, author, category, price range) ✅ **Implemented**
 - [ ] Implement Redis caching for frequently accessed data
 - [ ] Add Swagger/OpenAPI documentation
 - [ ] Implement file upload for book cover images (currently URL-based)
