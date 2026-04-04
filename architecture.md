@@ -851,7 +851,7 @@ src/test/java/
 - [x] Implement Redis caching for frequently accessed data
 - [x] Add Swagger/OpenAPI documentation ✅ **Implemented**
 - [x] Implement file upload for book cover images (currently URL-based) ✅ **Implemented**
-- [ ] Add comprehensive unit and integration tests
+- [x] Add comprehensive unit and integration tests
 - [ ] Implement CI/CD pipeline (GitHub Actions)
 - [ ] Add rate limiting (Bucket4j)
 - [ ] Implement audit logging for sensitive operations
