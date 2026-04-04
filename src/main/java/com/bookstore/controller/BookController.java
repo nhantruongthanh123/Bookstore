@@ -4,10 +4,10 @@ import com.bookstore.dto.Book.BookRequest;
 import com.bookstore.dto.Book.BookResponse;
 
 import com.bookstore.dto.Book.SearchBookRequest;
+import com.bookstore.dto.Page.PageResponse;
 import com.bookstore.service.book.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<Page<BookResponse>> getAllBooks(@PageableDefault(size = 4) Pageable pageable){
+    public ResponseEntity<PageResponse<BookResponse>> getAllBooks(@PageableDefault(size = 5) Pageable pageable){
         return ResponseEntity.ok(bookService.getAllBooks(pageable));
     }
 
@@ -54,7 +54,7 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<BookResponse>> searchBook(
+    public ResponseEntity<PageResponse<BookResponse>> searchBook(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String category,
@@ -64,7 +64,7 @@ public class BookController {
     ){
         SearchBookRequest request = new SearchBookRequest(title, author, category, minPrice, maxPrice);
 
-        Page<BookResponse> books = bookService.searchBooks(request, pageable);
+        PageResponse<BookResponse> books = bookService.searchBooks(request, pageable);
         return ResponseEntity.ok(books);
     }
 }

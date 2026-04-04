@@ -850,7 +850,7 @@ src/test/java/
 - [x] Add search and filtering for books (by title, author, category, price range) ✅ **Implemented**
 - [ ] Implement Redis caching for frequently accessed data
 - [x] Add Swagger/OpenAPI documentation ✅ **Implemented**
-- [ ] Implement file upload for book cover images (currently URL-based)
+- [x] Implement file upload for book cover images (currently URL-based) ✅ **Implemented**
 - [ ] Add comprehensive unit and integration tests
 - [ ] Implement CI/CD pipeline (GitHub Actions)
 - [ ] Add rate limiting (Bucket4j)

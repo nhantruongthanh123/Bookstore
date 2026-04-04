@@ -3,6 +3,7 @@ package com.bookstore.service.book;
 import com.bookstore.dto.Book.BookRequest;
 import com.bookstore.dto.Book.BookResponse;
 import com.bookstore.dto.Book.SearchBookRequest;
+import com.bookstore.dto.Page.PageResponse;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
 import com.bookstore.exception.ResourceNotFoundException;
@@ -11,6 +12,8 @@ import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.CategoryRepository;
 import com.bookstore.repository.spec.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,11 +30,14 @@ public class BookServiceImpl implements BookService {
 
 
     @Override
-    public Page<BookResponse> getAllBooks(Pageable pageable) {
+    @Cacheable(value = "books_page", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
+    public PageResponse<BookResponse> getAllBooks(Pageable pageable) {
         Page<Book> books = bookRepository.findAll(pageable);
-        return books.map(bookMapper::toResponse);
+        Page<BookResponse> responsePage = books.map(bookMapper::toResponse);
+        return PageResponse.of(responsePage);
     }
 
+    @Cacheable(value = "books", key = "#id")
     @Override
     public BookResponse getBookById(Long id) {
         Book book = bookRepository.findById(id)
@@ -41,6 +47,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CacheEvict(value = "books_page", allEntries = true)
     public BookResponse createBook(BookRequest bookRequest) {
         Book newBook = bookMapper.toEntity(bookRequest);
 
@@ -53,6 +60,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CacheEvict(value = {"books_page", "books"}, allEntries = true)
     public BookResponse updateBook(Long id, BookRequest bookRequest){
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
@@ -67,6 +75,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CacheEvict(value = {"books_page", "books"}, allEntries = true)
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("No book with id: " + id);
@@ -75,7 +84,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<BookResponse> searchBooks(SearchBookRequest request, Pageable pageable){
+    public PageResponse<BookResponse> searchBooks(SearchBookRequest request, Pageable pageable){
         Specification<Book> spec = Specification.where(BookSpecification.isNotDeleted())
                 .and(BookSpecification.hasTitle(request.title()))
                 .and(BookSpecification.hasAuthor(request.author()))
@@ -84,6 +93,7 @@ public class BookServiceImpl implements BookService {
                         request.maxPrice()));
 
         Page<Book> books = bookRepository.findAll(spec, pageable);
-        return books.map(bookMapper::toResponse);
+        Page<BookResponse> responsePage = books.map(bookMapper::toResponse);
+        return PageResponse.of(responsePage);
     }
 }

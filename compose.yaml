@@ -9,8 +9,16 @@ services:
       - MYSQL_DATABASE=bookstore
     volumes:
       - mysql_data:/var/lib/mysql
+  redis:
+    image: redis:latest
+    container_name: bookstore-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    restart: always
 
 volumes:
   mysql_data:
+  redis_data:
 
 
