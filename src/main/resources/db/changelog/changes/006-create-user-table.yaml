@@ -39,13 +39,13 @@ databaseChangeLog:
                   type: VARCHAR(15)
               - column:
                   name: enabled
-                  type: BOOLEAN
+                  type: BIT(1)
                   defaultValueBoolean: true
                   constraints:
                     nullable: false
               - column:
                   name: account_non_locked
-                  type: BOOLEAN
+                  type: BIT(1)
                   defaultValueBoolean: true
                   constraints:
                     nullable: false

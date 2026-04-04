@@ -29,7 +29,6 @@ public class RefreshToken {
     private Instant expiryDate;
 
     @Column(nullable = false)
-    @JdbcTypeCode(Types.TINYINT)
     private boolean revoked = false;
 
     @Column(name = "created_at", updatable = false)

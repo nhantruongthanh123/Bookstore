@@ -1,6 +1,7 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -32,9 +33,13 @@ public class Order {
     @Column
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
     @Column
+    @NotNull
     private String shippingAddress;
+
     @Column
+    @NotNull
     private String phoneNumber;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

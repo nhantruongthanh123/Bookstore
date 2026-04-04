@@ -33,13 +33,13 @@ databaseChangeLog:
                   type: VARCHAR(255)
               - column:
                   name: description
-                  type: TEXT
+                  type: VARCHAR(10000)
               - column:
                   name: cover_image
                   type: VARCHAR(500)
               - column:
                   name: is_deleted
-                  type: BOOLEAN
+                  type: BIT(1)
                   defaultValueBoolean: false
                   constraints:
                     nullable: false

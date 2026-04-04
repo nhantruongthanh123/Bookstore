@@ -848,7 +848,7 @@ src/test/java/
 - [x] ~~OAuth2 Google integration~~ ✅ **Implemented**
 - [x] ~~Pagination for lists~~ ✅ **Implemented**
 - [x] Add search and filtering for books (by title, author, category, price range) ✅ **Implemented**
-- [ ] Implement Redis caching for frequently accessed data
+- [x] Implement Redis caching for frequently accessed data
 - [x] Add Swagger/OpenAPI documentation ✅ **Implemented**
 - [x] Implement file upload for book cover images (currently URL-based) ✅ **Implemented**
 - [ ] Add comprehensive unit and integration tests

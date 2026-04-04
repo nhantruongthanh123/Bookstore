@@ -33,7 +33,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: revoked
-                  type: BOOLEAN
+                  type: BIT(1)
                   defaultValueBoolean: false
                   constraints:
                     nullable: false

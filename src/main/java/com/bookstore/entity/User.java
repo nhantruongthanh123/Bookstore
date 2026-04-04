@@ -49,11 +49,9 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false)
-    @JdbcTypeCode(Types.TINYINT)
     private Boolean enabled = true;
 
     @Column(nullable = false)
-    @JdbcTypeCode(Types.TINYINT)
     private Boolean accountNonLocked = true;
 
     @CreationTimestamp

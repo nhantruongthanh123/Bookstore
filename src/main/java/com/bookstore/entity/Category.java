@@ -26,7 +26,6 @@ public class Category {
     private String description;
 
     @Column(nullable = false)
-    @JdbcTypeCode(Types.TINYINT)
     private boolean isDeleted = false;
 
     @Override
