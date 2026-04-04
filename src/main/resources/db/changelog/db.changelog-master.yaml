@@ -18,7 +18,7 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/009-create-order-table.yaml
   - include:
-      file: db/changeLog/changes/010-create-order-item-table.yaml
+      file: db/changelog/changes/010-create-order-item-table.yaml
   - include:
       file: db/changelog/changes/011-create-cart-and-cartitem-tables.yaml
   - include:
