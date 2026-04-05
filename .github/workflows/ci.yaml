@@ -28,3 +28,10 @@ jobs:
         run: |
           docker build -t bookstore-app:${{ github.sha }} .
           echo "Docker Image built successfully!"
+
+      - name: Run Unit Tests
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUD_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUD_API_SECRET }}
+        run: mvn clean test
