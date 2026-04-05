@@ -31,7 +31,10 @@ jobs:
 
       - name: Run Unit Tests
         env:
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUD_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUD_API_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+          CLOUD_API_KEY: ${{ secrets.CLOUD_API_KEY }}
+          CLOUD_API_SECRET: ${{ secrets.CLOUD_API_SECRET }}
         run: mvn clean test
