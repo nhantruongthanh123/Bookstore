@@ -22,14 +22,6 @@ jobs:
           cache: maven
 
       - name: Run Unit Tests
-        run: mvn clean test
-
-      - name: Build Docker Image
-        run: |
-          docker build -t bookstore-app:${{ github.sha }} .
-          echo "Docker Image built successfully!"
-
-      - name: Run Unit Tests
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -38,3 +30,8 @@ jobs:
           CLOUD_API_KEY: ${{ secrets.CLOUD_API_KEY }}
           CLOUD_API_SECRET: ${{ secrets.CLOUD_API_SECRET }}
         run: mvn clean test
+
+      - name: Build Docker Image
+        run: |
+          docker build -t bookstore-app:${{ github.sha }} .
+          echo "Docker Image built successfully!"
