@@ -7,10 +7,13 @@
 **Java Version:** 21  
 **Build Tool:** Maven  
 **Database:** MySQL 8.0  
+**Cache:** Redis  
+**File Storage:** Cloudinary  
 **Authentication:** JWT (JSON Web Tokens) + OAuth2 (Google)  
 **Architecture Pattern:** Layered Architecture (MVC)  
 **Migration Tool:** Liquibase  
 **Mapping:** MapStruct  
+**API Documentation:** OpenAPI 3.0 (Swagger UI)  
 **Status:** ✅ Production-Ready Implementation Complete
 
 ---
@@ -27,7 +30,7 @@
 │                   SECURITY LAYER                                │
 │  ┌──────────────────┐  ┌─────────────────────────────────────┐ │
 │  │JwtAuthFilter     │  │ OAuth2 Success/Failure Handlers     │ │
-│  │  (Token Valid.)  │  │ (Google OAuth2 Integration)         │ │
+│  │  (Token Valid.)  │  │ (Google OAuth2 + Cookie Management) │ │
 │  └──────────────────┘  └─────────────────────────────────────┘ │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
@@ -35,54 +38,74 @@
 │                   PRESENTATION LAYER                            │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
 │  │AuthController│  │BookController│  │CategoryCtrl  │          │
+│  │              │  │(+ Search)    │  │              │          │
 │  └──────────────┘  └──────────────┘  └──────────────┘          │
-│  ┌──────────────┐  ┌──────────────┐                            │
-│  │CartController│  │OrderController│                           │
-│  └──────────────┘  └──────────────┘                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │CartController│  │OrderController│ │FileUploadCtrl│          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
 │  ┌──────────────────────────────────────────────────┐          │
 │  │     GlobalExceptionHandler + Custom Exceptions   │          │
 │  └──────────────────────────────────────────────────┘          │
 └─────────────────────┬───────────────────────────────────────────┘
-                      │ DTOs (MapStruct)
+                      │ DTOs (MapStruct + PageResponse)
 ┌─────────────────────▼───────────────────────────────────────────┐
 │                    BUSINESS LAYER                               │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
 │  │ AuthService  │  │ BookService  │  │CategoryServ  │          │
-│  │    (Impl)    │  │    (Impl)    │  │   (Impl)     │          │
+│  │    (Impl)    │  │  (Impl +     │  │   (Impl)     │          │
+│  │              │  │  Cacheable)  │  │(Redis Cache) │          │
 │  └──────────────┘  └──────────────┘  └──────────────┘          │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
 │  │ CartService  │  │ OrderService │  │RefreshToken  │          │
 │  │    (Impl)    │  │    (Impl)    │  │Service (Impl)│          │
 │  └──────────────┘  └──────────────┘  └──────────────┘          │
+│  ┌──────────────────────────┐                                   │
+│  │ CloudinaryService (Impl) │                                   │
+│  │  (File Upload to CDN)    │                                   │
+│  └──────────────────────────┘                                   │
 └─────────────────────┬───────────────────────────────────────────┘
-                      │ Entities
+                      │ Entities + Specifications
 ┌─────────────────────▼───────────────────────────────────────────┐
 │                   PERSISTENCE LAYER                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │UserRepository│  │BookRepository│  │CategoryRepo  │          │
-│  └──────────────┘  └──────────────┘  └──────────────┘          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │
+│  │UserRepository│  │BookRepository│  │CategoryRepo  │           │
+│  └──────────────┘  └──────────────┘  └──────────────┘           │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │
 │  │CartRepository│  │OrderRepository│  │RefreshToken  │          │
-│  └──────────────┘  └──────────────┘  │Repository    │          │
-│  ┌──────────────┐  ┌──────────────┐  └──────────────┘          │
-│  │CartItemRepo  │  │OrderItemRepo │                             │
-│  └──────┬───────┘  └──────┬───────┘                             │
+│  └──────────────┘  └──────────────┘  │Repository    │           │
+│  ┌──────────────┐  ┌──────────────┐  └──────────────┘           │
+│  │CartItemRepo  │  │OrderItemRepo │  ┌──────────────┐           │
+│  │              │  │              │  │BookSpec      │           │
+│  │              │  │              │  │(Dynamic Query│           │
+│  └──────┬───────┘  └──────┬───────┘  └──────────────┘           │
 │         │   JPA/Hibernate  │                                     │
 └─────────┼──────────────────┼─────────────────────────────────────┘
           │                  │
+          │                  │
 ┌─────────▼──────────────────▼─────────────────────────────────────┐
 │               MySQL Database (Liquibase Migrations)             │
-│  Tables: users, roles, books, categories, user_roles,       │
-│          book_category                                      │
-└─────────────────────────────────────────────────────────────┘
+│  Tables: users, roles, books, categories, user_roles,           │
+│          book_category, carts, cart_items, orders, order_items, │
+│          refresh_tokens, oauth2_accounts                        │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                     EXTERNAL SERVICES                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │ Redis Cache │  │  Cloudinary │  │Google OAuth2│             │
+│  │ (Categories,│  │  (Image CDN)│  │  Provider   │             │
+│  │  Books)     │  │             │  │             │             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
+└─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
 │                  CROSS-CUTTING CONCERNS                     │
 │  • Security (JWT Filter, SecurityConfig)                    │
 │  • Validation (Bean Validation)                             │
 │  • Mapping (MapStruct)                                      │
-│  • Monitoring (OpenTelemetry + Grafana)                     │
 │  • Database Migration (Liquibase)                           │
+│  • Caching (Redis with @Cacheable)                          │
+│  • API Documentation (OpenAPI/Swagger)                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -97,18 +120,21 @@ com.bookstore/
 │
 ├── controller/                      # REST API Controllers
 │   ├── AuthController.java         # Authentication (register, login, refresh)
-│   ├── BookController.java         # Book CRUD operations (public + admin)
+│   ├── BookController.java         # Book CRUD + search operations (public + admin)
 │   ├── CategoryController.java     # Category CRUD operations
 │   ├── CartController.java         # Shopping cart management
-│   └── OrderController.java        # Order placement & management
+│   ├── OrderController.java        # Order placement & management
+│   └── FileUploadController.java   # File upload to Cloudinary
 │
 ├── service/                         # Business Logic Layer
 │   ├── auth/
 │   │   ├── AuthService.java        # Auth interface
-│   │   └── AuthServiceImpl.java    # Auth implementation
+│   │   ├── AuthServiceImpl.java    # Auth implementation
+│   │   ├── RefreshTokenService.java# Token refresh interface
+│   │   └── RefreshTokenServiceImpl.java # Token refresh implementation
 │   ├── book/
 │   │   ├── BookService.java        # Book interface
-│   │   └── BookServiceImpl.java    # Book implementation
+│   │   └── BookServiceImpl.java    # Book implementation (with search)
 │   ├── category/
 │   │   ├── CategoryService.java    # Category interface
 │   │   └── CategoryServiceImpl.java# Category implementation
@@ -121,7 +147,9 @@ com.bookstore/
 │   ├── user/
 │   │   ├── UserService.java        # User management interface
 │   │   └── UserServiceImpl.java    # User implementation
-│   └── RefreshTokenService.java    # Token refresh service
+│   └── cloudinary/
+│       ├── CloudinaryService.java  # File upload interface
+│       └── CloudinaryServiceImpl.java # Cloudinary implementation
 │
 ├── repository/                      # Data Access Layer (JPA)
 │   ├── BookRepository.java
@@ -149,33 +177,42 @@ com.bookstore/
 │   └── OAuth2Account.java          # OAuth2 linked accounts
 │
 ├── dto/                             # Data Transfer Objects
-│   ├── auth/
+│   ├── Auth/
 │   │   ├── RegisterRequest.java
 │   │   ├── LoginRequest.java
 │   │   ├── AuthResponse.java
+│   │   ├── UserResponse.java
+│   │   ├── OAuth2UserInfo.java
 │   │   ├── TokenRefreshRequest.java
 │   │   └── TokenRefreshResponse.java
-│   ├── book/
+│   ├── Book/
 │   │   ├── BookRequest.java
-│   │   └── BookResponse.java
-│   ├── category/
+│   │   ├── BookResponse.java
+│   │   └── SearchBookRequest.java
+│   ├── Category/
 │   │   ├── CategoryRequest.java
 │   │   └── CategoryResponse.java
-│   ├── cart/
+│   ├── Cart/
 │   │   ├── AddToCartRequest.java
 │   │   ├── UpdateCartItemRequest.java
 │   │   ├── CartResponse.java
 │   │   └── CartItemResponse.java
-│   └── order/
-│       ├── OrderRequest.java
-│       ├── OrderResponse.java
-│       ├── OrderItemRequest.java
-│       └── OrderItemResponse.java
+│   ├── Order/
+│   │   ├── OrderRequest.java
+│   │   └── OrderResponse.java
+│   ├── OrderItem/
+│   │   ├── OrderItemRequest.java
+│   │   └── OrderItemResponse.java
+│   └── Page/
+│       └── PageResponse.java        # Generic pagination wrapper
 │
 ├── mapper/                          # MapStruct Mappers
-│   ├── BookMapper.java             # Entity ↔ DTO conversion
-│   ├── CategoryMapper.java
-│   └── OrderMapper.java
+│   ├── BookMapper.java             # Book Entity ↔ DTO conversion
+│   ├── CategoryMapper.java         # Category Entity ↔ DTO conversion
+│   └── OrderMapper.java            # Order Entity ↔ DTO conversion
+│
+├── repository/spec/                 # JPA Specifications
+│   └── BookSpecification.java      # Dynamic query builder for book search
 │
 ├── security/                        # Security Configuration
 │   ├── SecurityConfig.java         # Spring Security config (JWT + OAuth2)
@@ -183,16 +220,28 @@ com.bookstore/
 │   ├── JwtAuthenticationFilter.java# JWT filter for stateless auth
 │   ├── CustomUserDetailsService.java# Load user details
 │   ├── UserPrincipal.java          # UserDetails + OAuth2User impl
-│   ├── CustomOAuth2UserService.java# OAuth2 user handler
-│   └── OAuth2AuthenticationSuccessHandler.java
+│   ├── AuthenticationUtil.java     # Helper for getting current user
+│   └── oauth2/                     # OAuth2 Integration Package
+│       ├── CustomOAuth2UserService.java # OAuth2 user handler
+│       ├── OAuth2UserService.java  # OAuth2 service interface
+│       ├── OAuth2UserServiceImpl.java # OAuth2 service implementation
+│       ├── OAuth2AuthenticationSuccessHandler.java
+│       ├── OAuth2AuthenticationFailureHandler.java
+│       ├── HttpCookieOAuth2AuthorizationRequestRepository.java
+│       └── CookieUtils.java        # Cookie management utilities
 │
 ├── config/                          # Application Configuration
-│   └── AppConfig.java              # Auth beans (PasswordEncoder, etc.)
+│   ├── AppConfig.java              # Auth beans (PasswordEncoder, etc.)
+│   ├── CloudinaryConfig.java       # Cloudinary file upload configuration
+│   ├── RedisConfig.java            # Redis cache configuration
+│   └── OpenApiConfig.java          # Swagger/OpenAPI documentation config
 │
 └── exception/                       # Exception Handling
-    ├── GlobalExceptionHandler.java # Global exception handler
-    ├── ResourceNotFoundException.java
-    └── ErrorResponse.java          # Error response DTO
+    ├── GlobalExceptionHandler.java # Global exception handler (@ControllerAdvice)
+    ├── ResourceNotFoundException.java # 404 errors
+    ├── DuplicateResourceException.java # Duplicate entry errors
+    ├── UnauthorizedException.java  # 401 authentication errors
+    └── ErrorResponse.java          # Standard error response DTO
 ```
 
 ---
@@ -298,16 +347,33 @@ com.bookstore/
 | POST | `/api/auth/register` | Register new user | RegisterRequest | AuthResponse |
 | POST | `/api/auth/login` | Login with username/email | LoginRequest | AuthResponse |
 | POST | `/api/auth/refresh` | Refresh access token | TokenRefreshRequest | TokenRefreshResponse |
+| GET | `/oauth2/authorization/google` | Initiate Google OAuth2 login | - | Redirect to Google |
+| GET | `/login/oauth2/code/google` | OAuth2 callback endpoint | - | Redirect with JWT |
+
+### 📤 File Upload Endpoints (Public)
+
+| Method | Endpoint | Description | Request Body | Response |
+|--------|----------|-------------|--------------|----------|
+| POST | `/api/files/upload` | Upload image to Cloudinary | MultipartFile | `{"url": "cloudinary_url"}` |
 
 ### 📚 Book Endpoints
 
 | Method | Endpoint | Access | Description | Request Body | Response |
 |--------|----------|--------|-------------|--------------|----------|
-| GET | `/api/books` | Public | Get all books (pageable) | - | Page<BookResponse> |
+| GET | `/api/books` | Public | Get all books (pageable, default size=5) | - | PageResponse<BookResponse> |
 | GET | `/api/books/{id}` | Public | Get book by ID | - | BookResponse |
+| GET | `/api/books/search` | Public | Search books by title, author, category, price range | Query params | PageResponse<BookResponse> |
 | POST | `/api/books` | ADMIN | Create new book | BookRequest | BookResponse |
 | PUT | `/api/books/{id}` | ADMIN | Update book | BookRequest | BookResponse |
 | DELETE | `/api/books/{id}` | ADMIN | Delete book (soft) | - | - |
+
+**Search Query Parameters:**
+- `title` (optional): Search by book title
+- `author` (optional): Filter by author name
+- `category` (optional): Filter by category name
+- `minPrice` (optional): Minimum price filter
+- `maxPrice` (optional): Maximum price filter
+- Pagination: `page`, `size`, `sort` (default: 20 items per page, sorted by title)
 
 ### 📑 Category Endpoints
 
@@ -453,11 +519,19 @@ com.bookstore/
 - **Lombok** - Reduces boilerplate code
 - **MapStruct 1.5.5** - Type-safe DTO mapping
 
+### Caching & Performance
+- **Spring Cache** - Caching abstraction
+- **Redis** - Distributed cache store (categories: 7 days, books: 30 min)
+
+### File Storage
+- **Cloudinary** - Cloud-based image storage and CDN
+
+### API Documentation
+- **SpringDoc OpenAPI 3.0.1** - Auto-generated API documentation (Swagger UI)
+
 ### Development & DevOps
 - **Spring Boot DevTools** - Hot reload
 - **Spring Boot Docker Compose** - Container orchestration
-- **OpenTelemetry** - Observability & monitoring
-- **Grafana LGTM** - Metrics visualization
 
 ---
 
@@ -467,16 +541,22 @@ com.bookstore/
 
 ```yaml
 services:
-  grafana-lgtm:           # Monitoring & observability
-    - Port: 3000 (Grafana UI)
-    - Ports: 4317, 4318 (OpenTelemetry)
   
   mysql-db:               # Database
     - Image: mysql:8.0
+    - Container: bookstore-db
     - Port: 3306
     - Database: bookstore
     - Credentials: root/123456
     - Volume: mysql_data (persistent storage)
+  
+  redis:                  # Cache & Session Store
+    - Image: redis:latest
+    - Container: bookstore-redis
+    - Port: 6379
+    - Persistence: Saves every 60 seconds if at least 1 change
+    - Volume: redis_data
+    - Auto-restart: Always
 ```
 
 **Lifecycle Management:** Spring Boot automatically starts/stops containers during development.
@@ -498,6 +578,25 @@ spring.jpa.show-sql=true
 ```properties
 spring.liquibase.enabled=true
 spring.liquibase.changeLog=classpath:db/changelog/db.changelog-master.yaml
+```
+
+### Redis Cache Configuration
+```properties
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+spring.cache.type=redis
+# Cache TTLs:
+# - categories: 7 days
+# - books: 30 minutes
+# - books_page: 30 minutes
+# - default: 60 minutes
+```
+
+### Cloudinary Configuration
+```properties
+cloudinary.cloud-name=${CLOUDINARY_CLOUD_NAME}
+cloudinary.api-key=${CLOUDINARY_API_KEY}
+cloudinary.api-secret=${CLOUDINARY_API_SECRET}
 ```
 
 ### JWT Configuration
@@ -677,6 +776,8 @@ docker build -t bookstore-api .
 
 ## 🛡️ Error Handling
 
+### 🛡️ Error Handling
+
 ### Global Exception Handler
 
 ```java
@@ -685,6 +786,15 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(ResourceNotFoundException.class)
     → HTTP 404 NOT_FOUND
+    
+    @ExceptionHandler(DuplicateResourceException.class)
+    → HTTP 409 CONFLICT
+    
+    @ExceptionHandler(UnauthorizedException.class)
+    → HTTP 401 UNAUTHORIZED
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    → HTTP 400 BAD_REQUEST (validation errors)
     
     @ExceptionHandler(Exception.class)
     → HTTP 500 INTERNAL_SERVER_ERROR
@@ -708,7 +818,6 @@ public class GlobalExceptionHandler {
 ### Test Dependencies
 - `spring-boot-starter-webmvc-test` - Controller testing
 - `spring-security-test` - Security testing
-- `spring-boot-starter-opentelemetry-test` - Telemetry testing
 
 ### Test Structure (Recommended)
 ```
@@ -718,19 +827,6 @@ src/test/java/
 ├── repository/    # Repository tests
 └── security/      # Security configuration tests
 ```
-
----
-
-## 🔍 Monitoring & Observability
-
-### OpenTelemetry Integration
-- **Traces:** Request/response tracking
-- **Metrics:** Application performance metrics
-- **Logs:** Centralized logging
-
-### Grafana Dashboard
-- Access: `http://localhost:3000`
-- Monitors: Database queries, API response times, error rates
 
 ---
 
@@ -768,13 +864,16 @@ src/test/java/
 - ✅ Refresh token revocation support
 
 ### 📚 Book Management
-- ✅ Browse books (public, paginated)
+- ✅ Browse books (public, paginated with default size=5)
+- ✅ **Search books** (by title, author, category, price range)
 - ✅ View book details (public)
 - ✅ Create books (ADMIN only)
 - ✅ Update books (ADMIN only)
 - ✅ Soft delete books (ADMIN only)
+- ✅ **JPA Specification** for dynamic query building
 - ✅ Many-to-Many relationship with categories
 - ✅ ISBN, cover image, quantity tracking
+- ✅ **Redis caching** with 30-minute TTL
 - ✅ EntityGraph optimization for category loading
 
 ### 📑 Category Management
@@ -783,6 +882,7 @@ src/test/java/
 - ✅ Create categories (ADMIN only)
 - ✅ Update categories (ADMIN only)
 - ✅ Soft delete categories (ADMIN only)
+- ✅ **Redis caching** with 7-day TTL
 - ✅ Many-to-Many relationship with books
 
 ### 🛒 Shopping Cart
@@ -804,6 +904,12 @@ src/test/java/
 - ✅ Inventory reduction on order placement
 - ✅ Stock validation
 - ✅ Total amount calculation
+
+### 📤 File Upload
+- ✅ **Cloudinary integration** for image uploads
+- ✅ Upload endpoint returns CDN URL
+- ✅ Support for book cover images
+- ✅ Cloud-based storage with CDN delivery
 
 ### 🗄️ Database & Persistence
 - ✅ MySQL 8.0 database
@@ -830,12 +936,15 @@ src/test/java/
 - ✅ MapStruct entity-to-DTO mapping
 - ✅ Lombok code generation
 - ✅ Global exception handling
-- ✅ Custom exceptions (ResourceNotFoundException, etc.)
-- ✅ Docker Compose integration
-- ✅ OpenTelemetry observability
-- ✅ Grafana monitoring
+- ✅ Custom exceptions (ResourceNotFoundException, DuplicateResourceException, UnauthorizedException)
+- ✅ Docker Compose integration (MySQL + Redis)
+- ✅ **Redis caching** with configurable TTLs
+- ✅ **Cloudinary file storage**
+- ✅ **OpenAPI/Swagger documentation**
 - ✅ Spring Boot DevTools
 - ✅ Pagination support (Spring Data Pageable)
+- ✅ **PageResponse DTO** for standardized pagination
+- ✅ **BookSpecification** for dynamic search queries
 
 ---
 
@@ -868,20 +977,21 @@ src/test/java/
 
 **Project:** Spring Boot Bookstore API  
 **Academic:** Semester 6 Project (BK)  
-**Technology Stack:** Spring Boot 4.0.4 + MySQL 8.0 + JWT + OAuth2 + Swagger 
+**Technology Stack:** Spring Boot 4.0.4 + MySQL 8.0 + Redis + Cloudinary + JWT + OAuth2 + Swagger  
 **Architecture:** Layered MVC with Spring Security  
 **Status:** ✅ Production-Ready Implementation Complete
 
 ### Project Statistics
-- **Controllers:** 5 (Auth, Book, Category, Cart, Order)
-- **Services:** 7 interfaces with implementations
+- **Controllers:** 6 (Auth, Book, Category, Cart, Order, FileUpload)
+- **Services:** 8 interfaces with implementations
 - **Repositories:** 10 JPA repositories
 - **Entities:** 11 domain models
 - **Database Tables:** 12 (including join tables)
 - **Liquibase Changesets:** 14
-- **API Endpoints:** 25+ RESTful endpoints
+- **API Endpoints:** 30+ RESTful endpoints
+- **External Services:** Redis (caching), Cloudinary (file storage), Google OAuth2
 - **Lines of Code:** Comprehensive enterprise-grade application
 
 ---
 
-*Last Updated: April 2, 2026*
+*Last Updated: April 5, 2026*

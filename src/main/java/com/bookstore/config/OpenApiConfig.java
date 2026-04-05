@@ -42,7 +42,7 @@ public class OpenApiConfig {
                                 .url("http://localhost:8080")
                                 .description("Development Server"),
                         new Server()
-                                .url("https://api.bookstore.com")
+                                .url("http://159.223.36.232:8080")
                                 .description("Production Server")))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
