@@ -852,7 +852,7 @@ src/test/java/
 - [x] Add Swagger/OpenAPI documentation ✅ **Implemented**
 - [x] Implement file upload for book cover images (currently URL-based) ✅ **Implemented**
 - [x] Add comprehensive unit and integration tests
-- [ ] Implement CI/CD pipeline (GitHub Actions)
+- [x] Implement CI/CD pipeline (GitHub Actions)
 - [ ] Add rate limiting (Bucket4j)
 - [ ] Implement audit logging for sensitive operations
 - [ ] Add wishlist functionality
