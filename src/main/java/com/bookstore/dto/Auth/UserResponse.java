@@ -1,5 +1,6 @@
 package com.bookstore.dto.Auth;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -13,5 +14,9 @@ public record UserResponse(
         Boolean enabled,
         Boolean accountNonLocked,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        String avatar,
+        String address,
+        LocalDate dateOfBirth,
+        String gender
 ) {}

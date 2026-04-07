@@ -6,8 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,12 +24,6 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         AuthResponse authResponse = authService.login(loginRequest);
         return ResponseEntity.ok(authResponse);
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        UserResponse userResponse = authService.getCurrentUser(userDetails);
-        return ResponseEntity.ok(userResponse);
     }
 
     @PostMapping("/refresh")

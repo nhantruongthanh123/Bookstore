@@ -82,39 +82,6 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
     }
 
-    @Override
-    public UserResponse getCurrentUser(UserDetails userDetails) {
-        if (userDetails == null) {
-            throw new ResourceNotFoundException("User not authenticated");
-        }
-
-        User user;
-        
-        // Handle both UserPrincipal (OAuth2) and standard UserDetails
-        if (userDetails instanceof UserPrincipal userPrincipal) {
-            user = userPrincipal.getUser();
-        } else {
-            user = userService.findByUsername(userDetails.getUsername());
-        }
-
-        Set<String> roleNames = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getPhoneNumber(),
-                roleNames,
-                user.getEnabled(),
-                user.getAccountNonLocked(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
-    }
-
     private AuthResponse generateAuthResponse(User user) {
         UserDetails userDetails = buildUserDetails(user);
 
