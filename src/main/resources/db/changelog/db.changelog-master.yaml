@@ -25,3 +25,5 @@ databaseChangeLog:
       file: db/changelog/changes/012-create-refresh-token-table.yaml
   - include:
       file: db/changelog/changes/013-create-oauth2-account-table.yaml
+  - include:
+      file: db/changelog/changes/014-update-user-table.yaml
