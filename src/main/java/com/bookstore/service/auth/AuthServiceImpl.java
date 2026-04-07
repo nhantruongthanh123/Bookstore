@@ -5,7 +5,9 @@ import com.bookstore.dto.Auth.*;
 import com.bookstore.entity.RefreshToken;
 import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
+import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.security.JwtUtil;
+import com.bookstore.security.UserPrincipal;
 import com.bookstore.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,6 +80,39 @@ public class AuthServiceImpl implements AuthService {
                     );
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+
+    @Override
+    public UserResponse getCurrentUser(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new ResourceNotFoundException("User not authenticated");
+        }
+
+        User user;
+        
+        // Handle both UserPrincipal (OAuth2) and standard UserDetails
+        if (userDetails instanceof UserPrincipal userPrincipal) {
+            user = userPrincipal.getUser();
+        } else {
+            user = userService.findByUsername(userDetails.getUsername());
+        }
+
+        Set<String> roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFullName(),
+                user.getPhoneNumber(),
+                roleNames,
+                user.getEnabled(),
+                user.getAccountNonLocked(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
     }
 
     private AuthResponse generateAuthResponse(User user) {
