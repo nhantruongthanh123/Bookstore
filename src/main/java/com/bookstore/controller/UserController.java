@@ -22,7 +22,7 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-    @PutMapping("/me")
+    @PatchMapping("/me")
     public ResponseEntity<UserResponse> updateUser(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody @Valid UpdateUserRequest request) {
