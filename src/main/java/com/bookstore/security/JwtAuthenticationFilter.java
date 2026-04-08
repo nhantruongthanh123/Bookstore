@@ -66,7 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write("{\"error\": \"JWT token is expired\"}");
             return;
         }
-
         filterChain.doFilter(request, response);
     }
 }
