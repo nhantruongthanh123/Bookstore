@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -28,6 +30,12 @@ public class UserController {
             @RequestBody @Valid UpdateUserRequest request) {
         UserResponse userResponse = userService.updateUser(userDetails, request);
         return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }
 

@@ -6,6 +6,8 @@ import com.bookstore.dto.Auth.UserResponse;
 import com.bookstore.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.List;
+
 public interface UserService {
     User createUser(RegisterRequest registerRequest);
 
@@ -14,4 +16,6 @@ public interface UserService {
     
     UserResponse getCurrentUser(UserDetails userDetails);
     UserResponse updateUser(UserDetails userDetails, UpdateUserRequest request);
+
+    List<UserResponse> getAllUsers();
 }

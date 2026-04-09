@@ -7,6 +7,7 @@ import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
 import com.bookstore.exception.DuplicateResourceException;
 import com.bookstore.exception.ResourceNotFoundException;
+import com.bookstore.mapper.UserMapper;
 import com.bookstore.repository.RoleRepository;
 import com.bookstore.repository.UserRepository;
 import com.bookstore.security.UserPrincipal;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
     public User createUser(RegisterRequest registerRequest) {
@@ -137,5 +140,14 @@ public class UserServiceImpl implements UserService {
                 user.getDateOfBirth(),
                 user.getGender()
         );
+    }
+
+    @Override
+    @Transactional
+    public List<UserResponse> getAllUsers(){
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
     }
 }
