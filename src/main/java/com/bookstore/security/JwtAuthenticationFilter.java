@@ -60,7 +60,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         catch (ExpiredJwtException e) {
-            // BẮT LỖI HẾT HẠN VÀ TRẢ VỀ ĐÚNG MÃ 401
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"JWT token is expired\"}");

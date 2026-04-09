@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Cacheable(value = "categories", key = "'all'")
     public List<CategoryResponse> getAllCategories(){
         List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map(categoryMapper::toResponse).toList();
+        return categories.stream().map(categoryMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
