@@ -16,7 +16,6 @@ import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
-import tools.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -32,7 +31,6 @@ public class RedisConfig {
                 .allowIfBaseType(Object.class)
                 .build();
         ObjectMapper redisMapper = JsonMapper.builder()
-                .addModule(new JavaTimeModule())
                 .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .activateDefaultTyping(
