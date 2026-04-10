@@ -7,4 +7,5 @@ public interface CartService {
     CartResponse addToCart(Long bookId, Integer quantity);
     CartResponse updateCartItem(Long cartItemId, Integer quantity);
     CartResponse removeCartItem(Long cartItemId);
+    CartResponse removeAllCartItems();
 }

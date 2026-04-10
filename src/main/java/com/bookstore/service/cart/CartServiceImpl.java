@@ -139,4 +139,18 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.delete(item);
         return getCart();
     }
+
+    @Override
+    @Transactional
+    public CartResponse removeAllCartItems() {
+        Long userId = AuthenticationUtil.getCurrentUserId();
+
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        cartItemRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
+
+        return getCart();
+    }
 }
