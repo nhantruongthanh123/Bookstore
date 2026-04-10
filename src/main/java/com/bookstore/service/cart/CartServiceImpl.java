@@ -133,6 +133,9 @@ public class CartServiceImpl implements CartService {
             throw new RuntimeException("You are not allowed to remove this cart item");
         }
 
+        Cart cart =  item.getCart();
+        cart.getItems().remove(item);
+
         cartItemRepository.delete(item);
         return getCart();
     }
