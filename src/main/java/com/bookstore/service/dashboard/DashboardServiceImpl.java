@@ -7,7 +7,6 @@ import com.bookstore.dto.Order.OrderResponse;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
 import com.bookstore.entity.Order;
-import com.bookstore.entity.OrderItem;
 import com.bookstore.entity.OrderStatus;
 import com.bookstore.mapper.BookMapper;
 import com.bookstore.mapper.CategoryMapper;
@@ -49,11 +48,9 @@ public class DashboardServiceImpl implements DashboardService
         List<Order> ordersInWeek = orderRepository.findByOrderDateBetweenOrderByOrderDateAsc(startDateTime, endDateTime);
 
         Map<LocalDate, BigDecimal> dailyRevenueMap = new LinkedHashMap<>();
-        Map<LocalDate, Long> dailyBookCountMap = new LinkedHashMap<>();
         for (int i = 0; i < 7; i++) {
             LocalDate date = startDate.plusDays(i);
             dailyRevenueMap.put(date, BigDecimal.ZERO);
-            dailyBookCountMap.put(date, 0L);
         }
 
         BigDecimal weeklyRevenue = BigDecimal.ZERO;
@@ -74,13 +71,6 @@ public class DashboardServiceImpl implements DashboardService
             weeklyRevenue = weeklyRevenue.add(amount);
             orderInWeek++;
 
-            long bookCountInOrder = order.getOrderItems().stream()
-                    .map(OrderItem::getQuantity)
-                    .filter(Objects::nonNull)
-                    .mapToLong(Integer::longValue)
-                    .sum();
-            dailyBookCountMap.put(orderDate, dailyBookCountMap.get(orderDate) + bookCountInOrder);
-
             if (orderDate.equals(today)) {
                 orderToday++;
             }
@@ -89,7 +79,6 @@ public class DashboardServiceImpl implements DashboardService
         List<BigDecimal> dailyRevenue = dailyRevenueMap.values().stream()
                 .map(value -> value.setScale(2, RoundingMode.HALF_UP))
                 .toList();
-        List<Long> numberOfBooksInWeek = dailyBookCountMap.values().stream().toList();
         weeklyRevenue = weeklyRevenue.setScale(2, RoundingMode.HALF_UP);
 
         BookResponse alertBook = bookRepository.findBooksWithLowestQuantity(PageRequest.of(0, 1)).stream()
@@ -101,7 +90,14 @@ public class DashboardServiceImpl implements DashboardService
                 .map(orderMapper::toOrderResponse)
                 .toList();
 
-        List<Long> topSellerBookIds = orderRepository.findTopSellerBookIds(PageRequest.of(0, 3));
+        List<Object[]> topSellerBookStatsInWeek = orderRepository.findTopSellerBookStatsInRange(
+                startDateTime,
+                endDateTime,
+                PageRequest.of(0, 3)
+        );
+        List<Long> topSellerBookIds = topSellerBookStatsInWeek.stream()
+                .map(row -> ((Number) row[0]).longValue())
+                .toList();
         Map<Long, Book> bookMapById = new HashMap<>();
         if (!topSellerBookIds.isEmpty()) {
             for (Book book : bookRepository.findByIdIn(topSellerBookIds)) {
@@ -112,6 +108,9 @@ public class DashboardServiceImpl implements DashboardService
                 .map(bookMapById::get)
                 .filter(Objects::nonNull)
                 .map(bookMapper::toResponse)
+                .toList();
+        List<Long> numberOfBooksInWeek = topSellerBookStatsInWeek.stream()
+                .map(row -> ((Number) row[1]).longValue())
                 .toList();
 
         List<Object[]> topCategoryRows = bookRepository.findTopCategoriesByBookCount(PageRequest.of(0, 3));
