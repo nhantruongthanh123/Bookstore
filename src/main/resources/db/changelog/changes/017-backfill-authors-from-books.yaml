@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 017-backfill-authors-from-books
+      author: nhan
+      changes:
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: |
+              INSERT INTO authors (name)
+              SELECT DISTINCT b.author
+              FROM books b
+              WHERE b.author IS NOT NULL
+                AND NOT EXISTS (
+                  SELECT 1
+                  FROM authors a
+                  WHERE a.name = b.author
+                );
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: |
+              INSERT INTO book_author (book_id, author_id)
+              SELECT b.id, a.id
+              FROM books b
+              JOIN authors a ON a.name = b.author
+              WHERE b.author IS NOT NULL
+                AND NOT EXISTS (
+                  SELECT 1
+                  FROM book_author ba
+                  WHERE ba.book_id = b.id
+                    AND ba.author_id = a.id
+                );

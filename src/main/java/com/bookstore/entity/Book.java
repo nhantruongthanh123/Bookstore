@@ -22,8 +22,13 @@ public class Book {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String author;
+    @ManyToMany
+    @JoinTable(
+        name = "book_author",
+        joinColumns = @JoinColumn(name = "book_id"),
+        inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private Set<Author> authors = new HashSet<>();
 
     @Column
     private String publisher;

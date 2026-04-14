@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015-create-author-table
+      author: nhan
+      changes:
+        - createTable:
+            tableName: authors
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(10000)
+        - addUniqueConstraint:
+            constraintName: uk_authors_name
+            tableName: authors
+            columnNames: name
+

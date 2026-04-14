@@ -1,5 +1,6 @@
 package com.bookstore.repository.spec;
 
+import com.bookstore.entity.Author;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
 import jakarta.persistence.criteria.Join;
@@ -14,10 +15,20 @@ public class BookSpecification {
                         "%" + title.toLowerCase() + "%");
     }
 
-    public static Specification<Book> hasAuthor(String author) {
-        return (root, query, cb) ->
-                author == null ? null : cb.like(cb.lower(root.get("author")),
-                        "%" + author.toLowerCase() + "%");
+    public static Specification<Book> hasAuthor(Author author) {
+        return (root, query, cb) -> {
+            if (author == null) return null;
+            query.distinct(true);
+            Join<Book, Author> authorJoin = root.join("authors");
+            if (author.getId() != null) {
+                return cb.equal(authorJoin.get("id"), author.getId());
+            }
+            if (author.getName() == null || author.getName().isBlank()) {
+                return null;
+            }
+            return cb.like(cb.lower(authorJoin.get("name")),
+                    "%" + author.getName().trim().toLowerCase() + "%");
+        };
     }
 
     public static Specification<Book> hasCategory(String categoryName) {

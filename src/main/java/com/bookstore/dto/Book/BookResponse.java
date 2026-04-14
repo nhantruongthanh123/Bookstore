@@ -1,5 +1,6 @@
 package com.bookstore.dto.Book;
 
+import com.bookstore.dto.Author.AuthorResponse;
 import com.bookstore.dto.Category.CategoryResponse;
 
 import java.math.BigDecimal;
@@ -8,7 +9,7 @@ import java.util.Set;
 public record BookResponse(
         Long id,
         String title,
-        String author,
+        Set<AuthorResponse> authors,
         String publisher,
         BigDecimal price,
         String isbn,

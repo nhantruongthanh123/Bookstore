@@ -170,7 +170,13 @@ GET /api/books?page=0&size=10&sort=title,asc
     {
       "id": 1,
       "title": "The Great Gatsby",
-      "author": "F. Scott Fitzgerald",
+      "authors": [
+        {
+          "id": 1,
+          "name": "F. Scott Fitzgerald",
+          "description": "American novelist"
+        }
+      ],
       "publisher": "Scribner",
       "price": 15.99,
       "isbn": "978-0-7432-7356-5",
@@ -218,7 +224,13 @@ GET /api/books?page=0&size=10&sort=title,asc
 {
   "id": 1,
   "title": "The Great Gatsby",
-  "author": "F. Scott Fitzgerald",
+  "authors": [
+    {
+      "id": 1,
+      "name": "F. Scott Fitzgerald",
+      "description": "American novelist"
+    }
+  ],
   "publisher": "Scribner",
   "price": 15.99,
   "isbn": "978-0-7432-7356-5",
@@ -253,7 +265,7 @@ GET /api/books?page=0&size=10&sort=title,asc
 **Query Parameters:**
 
 - `title` (optional): Search by title
-- `author` (optional): Search by author
+- `author` (optional): Search by author name (mapped to Author filter)
 - `category` (optional): Filter by category name
 - `minPrice` (optional): Minimum price (BigDecimal)
 - `maxPrice` (optional): Maximum price (BigDecimal)
@@ -275,7 +287,13 @@ GET /api/books/search?title=gatsby&minPrice=10&maxPrice=20&page=0&size=10
     {
       "id": 1,
       "title": "The Great Gatsby",
-      "author": "F. Scott Fitzgerald",
+      "authors": [
+        {
+          "id": 1,
+          "name": "F. Scott Fitzgerald",
+          "description": "American novelist"
+        }
+      ],
       "publisher": "Scribner",
       "price": 15.99,
       "isbn": "978-0-7432-7356-5",
@@ -318,7 +336,7 @@ GET /api/books/search?title=gatsby&minPrice=10&maxPrice=20&page=0&size=10
 ```json
 {
   "title": "string (required)",
-  "author": "string (required)",
+  "authorsIds": [1, 2],
   "publisher": "string (optional)",
   "price": 15.99,
   "isbn": "string (optional)",
@@ -335,7 +353,13 @@ GET /api/books/search?title=gatsby&minPrice=10&maxPrice=20&page=0&size=10
 {
   "id": 1,
   "title": "New Book",
-  "author": "Author Name",
+  "authors": [
+    {
+      "id": 1,
+      "name": "Author Name",
+      "description": "Author description"
+    }
+  ],
   "publisher": "Publisher Name",
   "price": 15.99,
   "isbn": "978-0-7432-7356-5",
@@ -378,7 +402,7 @@ GET /api/books/search?title=gatsby&minPrice=10&maxPrice=20&page=0&size=10
 ```json
 {
   "title": "string (required)",
-  "author": "string (required)",
+  "authorsIds": [1, 2],
   "publisher": "string (optional)",
   "price": 15.99,
   "isbn": "string (optional)",
@@ -395,7 +419,13 @@ GET /api/books/search?title=gatsby&minPrice=10&maxPrice=20&page=0&size=10
 {
   "id": 1,
   "title": "Updated Book",
-  "author": "Author Name",
+  "authors": [
+    {
+      "id": 1,
+      "name": "Author Name",
+      "description": "Author description"
+    }
+  ],
   "publisher": "Publisher Name",
   "price": 15.99,
   "isbn": "978-0-7432-7356-5",

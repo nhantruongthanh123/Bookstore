@@ -5,6 +5,7 @@ import com.bookstore.dto.Book.BookResponse;
 
 import com.bookstore.dto.Book.SearchBookRequest;
 import com.bookstore.dto.Page.PageResponse;
+import com.bookstore.entity.Author;
 import com.bookstore.service.book.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,9 +63,18 @@ public class BookController {
             @RequestParam(required = false) BigDecimal maxPrice,
             @PageableDefault(size = 20, sort = "title") Pageable pageable
     ){
-        SearchBookRequest request = new SearchBookRequest(title, author, category, minPrice, maxPrice);
+        SearchBookRequest request = new SearchBookRequest(title, toAuthorFilter(author), category, minPrice, maxPrice);
 
         PageResponse<BookResponse> books = bookService.searchBooks(request, pageable);
         return ResponseEntity.ok(books);
+    }
+
+    private Author toAuthorFilter(String authorName) {
+        if (authorName == null || authorName.isBlank()) {
+            return null;
+        }
+        Author author = new Author();
+        author.setName(authorName.trim());
+        return author;
     }
 }

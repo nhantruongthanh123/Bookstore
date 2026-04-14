@@ -27,3 +27,11 @@ databaseChangeLog:
       file: db/changelog/changes/013-create-oauth2-account-table.yaml
   - include:
       file: db/changelog/changes/014-update-user-table.yaml
+  - include:
+      file: db/changelog/changes/015-create-author-table.yaml
+  - include:
+      file: db/changelog/changes/016-add-author-id-to-books.yaml
+  - include:
+      file: db/changelog/changes/017-backfill-authors-from-books.yaml
+  - include:
+      file: db/changelog/changes/018-enforce-author-id-not-null.yaml

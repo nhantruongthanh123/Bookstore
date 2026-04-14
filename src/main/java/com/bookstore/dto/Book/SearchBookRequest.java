@@ -1,10 +1,12 @@
 package com.bookstore.dto.Book;
 
+import com.bookstore.entity.Author;
+
 import java.math.BigDecimal;
 
 public record SearchBookRequest (
         String title,
-        String author,
+        Author author,
         String category,
         BigDecimal minPrice,
         BigDecimal maxPrice

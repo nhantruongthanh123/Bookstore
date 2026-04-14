@@ -279,22 +279,38 @@ com.bookstore/
                                  └─────────────────────┘
 
 ┌─────────────────────┐          ┌─────────────────────┐
-│       books         │          │    categories       │
+│       books         │          │      authors        │
 ├─────────────────────┤          ├─────────────────────┤
-│ id (PK)             │          │ id (PK)             │
-│ title               │◄────┐    │ name (unique)       │
-│ author              │     │    │ description         │
-│ publisher           │     │    │ is_deleted          │
+│ id (PK)             │◄────┐    │ id (PK)             │
+│ title               │     │    │ name (unique)       │
+│ publisher           │     │    │ description         │
 │ price               │     │    └─────────────────────┘
 │ isbn                │     │              ▲
 │ description         │     │              │
 │ cover_image         │     │    ┌─────────┴─────────┐
-│ quantity            │     └────┤  book_category    │
-│ is_deleted          │          │  (join table)     │
+│ quantity            │     └────┤   book_author     │
+│ is_deleted          │          │   (join table)    │
 └─────────────────────┘          ├───────────────────┤
         │                        │ book_id (FK)      │
-        │                        │ category_id (FK)  │
+        │                        │ author_id (FK)    │
         ▼                        └───────────────────┘
+┌─────────────────────┐
+│    categories       │
+├─────────────────────┤
+│ id (PK)             │
+│ name (unique)       │
+│ description         │
+│ is_deleted          │
+└─────────────────────┘
+        ▲
+        │
+┌───────┴───────────┐
+│   book_category   │
+│   (join table)    │
+├───────────────────┤
+│ book_id (FK)      │
+│ category_id (FK)  │
+└───────────────────┘
 ┌─────────────────────┐
 │    cart_items       │          ┌─────────────────────┐
 ├─────────────────────┤          │   order_items       │
@@ -327,6 +343,7 @@ com.bookstore/
 - **User ↔ Order:** One-to-Many
 - **User ↔ RefreshToken:** One-to-Many
 - **User ↔ OAuth2Account:** One-to-Many
+- **Book ↔ Author:** Many-to-Many
 - **Book ↔ Category:** Many-to-Many
 - **Book ↔ CartItem:** One-to-Many
 - **Book ↔ OrderItem:** One-to-Many
@@ -369,7 +386,7 @@ com.bookstore/
 
 **Search Query Parameters:**
 - `title` (optional): Search by book title
-- `author` (optional): Filter by author name
+- `author` (optional): Filter by author name (mapped to `Author` filter in `SearchBookRequest`)
 - `category` (optional): Filter by category name
 - `minPrice` (optional): Minimum price filter
 - `maxPrice` (optional): Maximum price filter
@@ -638,20 +655,24 @@ src/main/resources/db/changelog/changes/
 
 | Order | File | Description |
 |-------|------|-------------|
-| 1 | `001-create-category-tables.yaml` | Creates `categories` table with soft delete |
-| 2 | `002-create-book-tables.yaml` | Creates `books` table with soft delete |
+| 1 | `001-create-category-table.yaml` | Creates `categories` table with soft delete |
+| 2 | `002-create-book-table.yaml` | Creates `books` table with soft delete |
 | 3 | `003-create-book-category-table.yaml` | Creates `book_category` join table (Many-to-Many) |
 | 4 | `004-insert-sample-datas.yaml` | Inserts sample books and categories data |
-| 5 | `005-create-role-tables.yaml` | Creates `roles` table |
-| 6 | `006-create-user-tables.yaml` | Creates `users` table with auth fields |
-| 7 | `007-create-user-role-tables.yaml` | Creates `user_roles` join table (Many-to-Many) |
+| 5 | `005-create-role-table.yaml` | Creates `roles` table |
+| 6 | `006-create-user-table.yaml` | Creates `users` table with auth fields |
+| 7 | `007-create-user-role-table.yaml` | Creates `user_roles` join table (Many-to-Many) |
 | 8 | `008-insert-roles-data.yaml` | Inserts default roles: ROLE_USER, ROLE_ADMIN |
-| 9 | `009-create-cart-tables.yaml` | Creates `carts` table (OneToOne with users) |
-| 10 | `010-create-cart-item-tables.yaml` | Creates `cart_items` table |
-| 11 | `011-create-order-tables.yaml` | Creates `orders` table with status enum |
-| 12 | `012-create-order-item-tables.yaml` | Creates `order_items` table |
-| 13 | `013-create-refresh-token-tables.yaml` | Creates `refresh_tokens` table |
-| 14 | `014-create-oauth2-account-tables.yaml` | Creates `oauth2_users` for OAuth2 integration |
+| 9 | `009-create-order-table.yaml` | Creates `orders` table with status enum |
+| 10 | `010-create-order-item-table.yaml` | Creates `order_items` table |
+| 11 | `011-create-cart-and-cartitem-tables.yaml` | Creates `carts` and `cart_items` tables |
+| 12 | `012-create-refresh-token-table.yaml` | Creates `refresh_tokens` table |
+| 13 | `013-create-oauth2-account-table.yaml` | Creates `oauth2_users` for OAuth2 integration |
+| 14 | `014-update-user-table.yaml` | Updates user table structure |
+| 15 | `015-create-author-table.yaml` | Creates `authors` table and `book_author` join table |
+| 16 | `016-add-author-id-to-books.yaml` | Creates `book_author` join table with indexes and foreign keys |
+| 17 | `017-backfill-authors-from-books.yaml` | Backfills author data into author relations |
+| 18 | `018-enforce-author-id-not-null.yaml` | Enforces complete `book_author` mapping for books with legacy author data |
 
 ### Key Features
 - **Automatic Execution:** Liquibase runs on application startup
@@ -665,22 +686,24 @@ src/main/resources/db/changelog/changes/
 ```yaml
 # db/changelog/db.changelog-master.yaml
 databaseChangeLog:
-  - include:
-      file: db/changelog/changes/001-create-category-table.yaml
-  - include:
-      file: db/changelog/changes/002-create-book-table.yaml
-  - include:
-      file: db/changelog/changes/003-create-book-category-table.yaml
-  - include:
-      file: db/changelog/changes/004-insert-sample-datas.yaml
-  - include:
-      file: db/changelog/changes/005-create-role-table.yaml
-  - include:
-      file: db/changelog/changes/006-create-user-table.yaml
-  - include:
-      file: db/changelog/changes/007-create-user-role-table.yaml
-  - include:
-      file: db/changelog/changes/008-insert-roles-data.yaml
+  - include: { file: db/changelog/changes/001-create-category-table.yaml }
+  - include: { file: db/changelog/changes/002-create-book-table.yaml }
+  - include: { file: db/changelog/changes/003-create-book-category-table.yaml }
+  - include: { file: db/changelog/changes/004-insert-sample-datas.yaml }
+  - include: { file: db/changelog/changes/005-create-role-table.yaml }
+  - include: { file: db/changelog/changes/006-create-user-table.yaml }
+  - include: { file: db/changelog/changes/007-create-user-role-table.yaml }
+  - include: { file: db/changelog/changes/008-insert-roles-data.yaml }
+  - include: { file: db/changelog/changes/009-create-order-table.yaml }
+  - include: { file: db/changelog/changes/010-create-order-item-table.yaml }
+  - include: { file: db/changelog/changes/011-create-cart-and-cartitem-tables.yaml }
+  - include: { file: db/changelog/changes/012-create-refresh-token-table.yaml }
+  - include: { file: db/changelog/changes/013-create-oauth2-account-table.yaml }
+  - include: { file: db/changelog/changes/014-update-user-table.yaml }
+  - include: { file: db/changelog/changes/015-create-author-table.yaml }
+  - include: { file: db/changelog/changes/016-add-author-id-to-books.yaml }
+  - include: { file: db/changelog/changes/017-backfill-authors-from-books.yaml }
+  - include: { file: db/changelog/changes/018-enforce-author-id-not-null.yaml }
 ```
 
 ---
@@ -753,7 +776,7 @@ docker build -t bookstore-api .
 
 ```
 1. Client → POST /api/books
-   Body: BookRequest (title, author, price, categoryIds)
+   Body: BookRequest (title, authorsIds, price, categoryIds)
    Header: Authorization: Bearer {jwt}
 
 2. JwtAuthenticationFilter validates token
@@ -913,9 +936,9 @@ src/test/java/
 
 ### 🗄️ Database & Persistence
 - ✅ MySQL 8.0 database
-- ✅ Liquibase migrations (14 changesets)
-- ✅ 11 JPA entities with relationships
-- ✅ 10 repositories
+- ✅ Liquibase migrations (18 changesets)
+- ✅ 12 JPA entities with relationships
+- ✅ 11 repositories
 - ✅ Soft delete pattern
 - ✅ Automatic timestamps (createdAt, updatedAt)
 - ✅ Index on refresh_token user_id

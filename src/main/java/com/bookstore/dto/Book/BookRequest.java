@@ -2,18 +2,18 @@ package com.bookstore.dto.Book;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
 public record BookRequest(
-        @NotBlank(message = "Title is required")
+        @jakarta.validation.constraints.NotBlank(message = "Title is required")
         String title,
 
-        @NotBlank(message = "Author is required")
-        String author,
+        @NotEmpty(message = "At least one author is required")
+        Set<Long> authorsIds,
 
         String publisher,
 

@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 016-create-book-author-table
+      author: nhan
+      changes:
+        - createTable:
+            tableName: book_author
+            columns:
+              - column:
+                  name: book_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: book_author
+            constraintName: pk_book_author
+            columnNames: book_id, author_id
+        - createIndex:
+            tableName: book_author
+            indexName: idx_book_author_author_id
+            columns:
+              - column:
+                  name: author_id
+        - addForeignKeyConstraint:
+            baseTableName: book_author
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_book_author_book
+        - addForeignKeyConstraint:
+            baseTableName: book_author
+            baseColumnNames: author_id
+            referencedTableName: authors
+            referencedColumnNames: id
+            constraintName: fk_book_author_author

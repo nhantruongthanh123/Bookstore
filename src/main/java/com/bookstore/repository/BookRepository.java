@@ -2,6 +2,7 @@ package com.bookstore.repository;
 
 import com.bookstore.entity.Book;
 import lombok.NonNull;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,15 +11,26 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
-    @EntityGraph(attributePaths = {"categories"})
+    @EntityGraph(attributePaths = {"categories", "authors"})
     @NonNull
     @Override
     List<Book> findAll();
 
-    @EntityGraph(attributePaths = {"categories"})
+    @EntityGraph(attributePaths = {"categories", "authors"})
+    @NonNull
+    @Override
+    Page<Book> findAll(@NonNull Pageable pageable);
+
+    @EntityGraph(attributePaths = {"categories", "authors"})
+    @NonNull
+    @Override
+    Optional<Book> findById(@NonNull Long id);
+
+    @EntityGraph(attributePaths = {"categories", "authors"})
     List<Book> findByIdIn(List<Long> ids);
 
     @Query("""
