@@ -672,7 +672,7 @@ src/main/resources/db/changelog/changes/
 | 15 | `015-create-author-table.yaml` | Creates `authors` table and `book_author` join table |
 | 16 | `016-add-author-id-to-books.yaml` | Creates `book_author` join table with indexes and foreign keys |
 | 17 | `017-backfill-authors-from-books.yaml` | Backfills author data into author relations |
-| 18 | `018-enforce-author-id-not-null.yaml` | Enforces complete `book_author` mapping for books with legacy author data |
+| 18 | `018-validate-author-mapping-and-drop-legacy-book-author-column.yaml` | Validates complete `book_author` mapping, then drops legacy `books.author` column |
 
 ### Key Features
 - **Automatic Execution:** Liquibase runs on application startup
@@ -703,7 +703,7 @@ databaseChangeLog:
   - include: { file: db/changelog/changes/015-create-author-table.yaml }
   - include: { file: db/changelog/changes/016-add-author-id-to-books.yaml }
   - include: { file: db/changelog/changes/017-backfill-authors-from-books.yaml }
-  - include: { file: db/changelog/changes/018-enforce-author-id-not-null.yaml }
+  - include: { file: db/changelog/changes/018-validate-author-mapping-and-drop-legacy-book-author-column.yaml }
 ```
 
 ---

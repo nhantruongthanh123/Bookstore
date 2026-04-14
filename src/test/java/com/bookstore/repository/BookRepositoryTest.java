@@ -1,5 +1,6 @@
 package com.bookstore.repository;
 
+import com.bookstore.entity.Author;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,12 +35,16 @@ public class BookRepositoryTest {
         category.setDescription("A genre of speculative fiction that explores the potential consequences of imagined innovations in science and technology");
         Category savedCategory = entityManager.persist(category);
 
+        Author author = new Author();
+        author.setName("Frank Herbert");
+        Author savedAuthor = entityManager.persist(author);
+
         Book book = new Book();
         book.setTitle("Dune");
-        book.setAuthor("Frank Herbert");
+        book.setAuthors(new HashSet<>(Set.of(savedAuthor)));
         book.setQuantity(100);
         book.setPrice(new BigDecimal("50.0"));
-        book.setCategories(Set.of(savedCategory));
+        book.setCategories(new HashSet<>(Set.of(savedCategory)));
 
         entityManager.persist(book);
         entityManager.flush();
@@ -55,5 +61,7 @@ public class BookRepositoryTest {
 
         assertThat(retrievedBook.getCategories()).isNotEmpty();
         assertThat(retrievedBook.getCategories().iterator().next().getName()).isEqualTo("Sci-fi");
+        assertThat(retrievedBook.getAuthors()).isNotEmpty();
+        assertThat(retrievedBook.getAuthors().iterator().next().getName()).isEqualTo("Frank Herbert");
     }
 }

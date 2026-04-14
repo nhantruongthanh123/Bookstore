@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 018-ensure-book-author-mapping-complete
+      author: nhan
+      preConditions:
+        - onFail: HALT
+        - onError: HALT
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM books b
+              WHERE b.author IS NOT NULL
+                AND NOT EXISTS (
+                  SELECT 1
+                  FROM book_author ba
+                  WHERE ba.book_id = b.id
+                )
+      changes:
+        - createIndex:
+            tableName: book_author
+            indexName: idx_book_author_book_id
+            columns:
+              - column:
+                  name: book_id
+
+  - changeSet:
+      id: 018-drop-legacy-book-author-column
+      author: nhan
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: books
+        - columnExists:
+            tableName: books
+            columnName: author
+      changes:
+        - dropColumn:
+            tableName: books
+            columnName: author

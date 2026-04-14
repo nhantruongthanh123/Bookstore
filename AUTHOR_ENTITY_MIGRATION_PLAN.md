@@ -30,7 +30,7 @@ Move from `books.author` (string) to a dedicated `authors` table/entity, while p
    - Validate no row lost:
      - every book with non-null old `books.author` has at least one row in `book_author`.
 
-4. Create new Liquibase file: `018-enforce-author-id-not-null.yaml`
+4. Create new Liquibase file: `018-validate-author-mapping-and-drop-legacy-book-author-column.yaml`
    - Enforce backfill integrity with preconditions and add supporting index on `book_id`.
    - Keep old `books.author` column temporarily for rollback compatibility.
 
