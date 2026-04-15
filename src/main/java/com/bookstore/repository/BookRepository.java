@@ -2,7 +2,6 @@ package com.bookstore.repository;
 
 import com.bookstore.entity.Book;
 import lombok.NonNull;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,11 +18,6 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
     @NonNull
     @Override
     List<Book> findAll();
-
-    @EntityGraph(attributePaths = {"categories", "authors"})
-    @NonNull
-    @Override
-    Page<Book> findAll(@NonNull Pageable pageable);
 
     @EntityGraph(attributePaths = {"categories", "authors"})
     @NonNull

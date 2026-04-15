@@ -2,6 +2,7 @@ package com.bookstore.entity;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ public class Book {
         joinColumns = @JoinColumn(name = "book_id"),
         inverseJoinColumns = @JoinColumn(name = "author_id")
     )
+    @BatchSize(size = 25)
     private Set<Author> authors = new HashSet<>();
 
     @Column
@@ -57,6 +59,7 @@ public class Book {
         joinColumns = @JoinColumn(name = "book_id"),
         inverseJoinColumns = @JoinColumn(name = "category_id")
     )
+    @BatchSize(size = 25)
     private Set<Category> categories =  new HashSet<>();
 
     @Override

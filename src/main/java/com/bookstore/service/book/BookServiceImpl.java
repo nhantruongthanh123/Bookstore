@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -35,6 +36,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Cacheable(value = "books_page", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
+    @Transactional(readOnly = true)
     public PageResponse<BookResponse> getAllBooks(Pageable pageable) {
         Page<Book> books = bookRepository.findAll(pageable);
         Page<BookResponse> responsePage = books.map(bookMapper::toResponse);
@@ -90,6 +92,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponse<BookResponse> searchBooks(SearchBookRequest request, Pageable pageable){
         Specification<Book> spec = Specification.where(BookSpecification.isNotDeleted())
                 .and(BookSpecification.hasTitle(request.title()))

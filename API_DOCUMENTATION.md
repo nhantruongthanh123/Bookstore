@@ -15,8 +15,11 @@
 3. [Category Endpoints](#category-endpoints)
 4. [Cart Endpoints](#cart-endpoints)
 5. [Order Endpoints](#order-endpoints)
-6. [File Upload Endpoints](#file-upload-endpoints)
-7. [Error Response Format](#error-response-format)
+6. [Author Endpoints](#author-endpoints)
+7. [User Endpoints](#user-endpoints)
+8. [Admin Dashboard Endpoints](#admin-dashboard-endpoints)
+9. [File Upload Endpoints](#file-upload-endpoints)
+10. [Error Response Format](#error-response-format)
 
 ---
 
@@ -809,6 +812,32 @@ No body content returned.
 
 ---
 
+### 5. Remove All Cart Items
+
+**Description:** Remove all items from the current user's cart.
+
+**URL:** `DELETE /api/cart/items`
+
+**Authentication:** JWT Bearer Token required
+
+**Success Response (200 OK):**
+
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "items": [],
+  "totalPrice": 0.00
+}
+```
+
+**Error Responses:**
+
+- **401 Unauthorized:** No token provided or invalid token
+- **500 Internal Server Error:** Server error
+
+---
+
 ## Order Endpoints
 
 ### 1. Place Order
@@ -1147,6 +1176,184 @@ PATCH /api/orders/admin/1/status?status=SHIPPED
 
 ---
 
+## Author Endpoints
+
+### 1. Get Authors (Paginated)
+
+**Description:** Get paginated authors with optional name filter.
+
+**URL:** `GET /api/authors`
+
+**Authentication:** None required
+
+**Query Parameters:**
+
+- `find` (optional): Keyword for author name search
+- `page` (optional): Page number (default: 0)
+- `size` (optional): Page size (default: 20)
+- `sort` (optional): Sort field (default: `name`)
+
+**Success Response (200 OK):**
+
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "name": "F. Scott Fitzgerald",
+      "description": "American novelist"
+    }
+  ],
+  "pageNo": 0,
+  "pageSize": 20,
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true
+}
+```
+
+### 2. Get Author by ID
+
+**URL:** `GET /api/authors/{id}`
+
+**Authentication:** None required
+
+**Success Response (200 OK):**
+
+```json
+{
+  "id": 1,
+  "name": "F. Scott Fitzgerald",
+  "description": "American novelist"
+}
+```
+
+### 3. Create Author (Admin Only)
+
+**URL:** `POST /api/admin/authors`
+
+**Authentication:** JWT Bearer Token required (Admin role)
+
+**Request Body:**
+
+```json
+{
+  "name": "Author name",
+  "description": "Author description"
+}
+```
+
+### 4. Update Author (Admin Only)
+
+**URL:** `PATCH /api/admin/authors/{id}`
+
+**Authentication:** JWT Bearer Token required (Admin role)
+
+**Request Body:**
+
+```json
+{
+  "name": "Updated author name",
+  "description": "Updated description"
+}
+```
+
+### 5. Delete Author (Admin Only)
+
+**URL:** `DELETE /api/admin/authors/{id}`
+
+**Authentication:** JWT Bearer Token required (Admin role)
+
+**Success Response:** `204 No Content`
+
+---
+
+## User Endpoints
+
+### 1. Get Current User
+
+**URL:** `GET /api/users/me`
+
+**Authentication:** JWT Bearer Token required
+
+**Success Response (200 OK):**
+
+```json
+{
+  "id": 1,
+  "username": "johndoe",
+  "email": "johndoe@example.com",
+  "fullName": "John Doe",
+  "phoneNumber": "0123456789",
+  "roles": ["ROLE_USER"],
+  "enabled": true,
+  "accountNonLocked": true,
+  "createdAt": "2024-04-06T16:23:31.718Z",
+  "updatedAt": "2024-04-06T16:23:31.718Z",
+  "avatar": null,
+  "address": null,
+  "dateOfBirth": null,
+  "gender": null
+}
+```
+
+### 2. Update Current User
+
+**URL:** `PATCH /api/users/me`
+
+**Authentication:** JWT Bearer Token required
+
+**Request Body:**
+
+```json
+{
+  "fullName": "John Doe",
+  "phoneNumber": "0123456789",
+  "avatar": "https://example.com/avatar.jpg",
+  "address": "123 Main St",
+  "dateOfBirth": "2000-01-01",
+  "gender": "Male"
+}
+```
+
+### 3. Get All Users (Admin Only)
+
+**URL:** `GET /api/users/admin`
+
+**Authentication:** JWT Bearer Token required (Admin role)
+
+**Success Response (200 OK):** `UserResponse[]`
+
+---
+
+## Admin Dashboard Endpoints
+
+### 1. Get Dashboard Summary (Admin Only)
+
+**URL:** `GET /api/admin/dashboard`
+
+**Authentication:** JWT Bearer Token required (Admin role)
+
+**Success Response (200 OK):**
+
+```json
+{
+  "totalActiveUsers": 150,
+  "weeklyRevenue": 1200.50,
+  "orderInWeek": 45,
+  "orderToday": 8,
+  "alertBook": {},
+  "dailyRevenue": [120.5, 95.0, 180.0],
+  "recentOrders": [],
+  "topSellerBooks": [],
+  "numberOfBooksInWeek": [10, 12, 8],
+  "topCategories": [],
+  "percentOfTopCategories": [45.5, 30.0, 24.5]
+}
+```
+
+---
+
 ## File Upload Endpoints
 
 ### 1. Upload Image
@@ -1265,9 +1472,9 @@ For paginated endpoints, the response includes:
 
 ### 3. Role-Based Access
 
-- **Public endpoints:** Books (read), Categories (read), Auth endpoints
-- **User endpoints:** Cart, Orders (own orders)
-- **Admin endpoints:** Book/Category management, All orders management
+- **Public endpoints:** Auth, books (read/search), categories (read), authors (read)
+- **User endpoints:** Profile (`/api/users/me`), cart, own orders
+- **Admin endpoints:** Book/category/author management, user list, all orders management, dashboard
 
 ### 4. File Upload
 
