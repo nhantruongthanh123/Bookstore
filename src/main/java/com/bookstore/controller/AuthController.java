@@ -2,6 +2,7 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.Auth.*;
 import com.bookstore.service.auth.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,17 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenRefreshResponse> refresh(@Valid @RequestBody String request,  HttpServletResponse response) {
-        TokenRefreshResponse tokenRefreshResponse = authService.refreshToken(request, response);
+    public ResponseEntity<TokenRefreshResponse> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken,  HttpServletResponse response) {
+        if (refreshToken == null || refreshToken.trim().isEmpty()) {
+            throw new RuntimeException("Refresh token is missing from HttpOnly Cookie!");
+        }
+        TokenRefreshResponse tokenRefreshResponse = authService.refreshToken(refreshToken, response);
         return ResponseEntity.ok(tokenRefreshResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        authService.logout(request, response);
+        return ResponseEntity.ok().body("{\"message\": \"Logged out successfully!\"}");
     }
 }

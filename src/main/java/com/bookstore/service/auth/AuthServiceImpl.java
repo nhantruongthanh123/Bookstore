@@ -8,6 +8,7 @@ import com.bookstore.entity.User;
 import com.bookstore.security.JwtUtil;
 import com.bookstore.security.oauth2.CookieUtils;
 import com.bookstore.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,6 +96,15 @@ public class AuthServiceImpl implements AuthService {
                     );
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+
+    @Override
+    @Transactional
+    public void logout(HttpServletRequest request, HttpServletResponse response){
+        CookieUtils.getCookie(request, "refreshToken")
+                .map(jakarta.servlet.http.Cookie::getValue)
+                .ifPresent(refreshTokenService::deleteByToken);
+        CookieUtils.deleteCookie(response, "refreshToken");
     }
 
     private AuthResponse generateAuthResponse(User user) {
