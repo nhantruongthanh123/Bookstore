@@ -5,10 +5,10 @@ import com.bookstore.dto.Auth.*;
 import com.bookstore.entity.RefreshToken;
 import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
-import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.security.JwtUtil;
-import com.bookstore.security.UserPrincipal;
+import com.bookstore.security.oauth2.CookieUtils;
 import com.bookstore.service.user.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,18 +30,25 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Value("${jwt.access-token-expiration}")
-    private Long accessTokenExpirationMs;
+    private Long accessTokenExpiration;
+
+    @Value("${jwt.refresh-token-expiration}")
+    private Integer refreshTokenExpiration;
 
     @Override
     @Transactional
-    public AuthResponse register(RegisterRequest registerRequest) {
+    public AuthResponse register(RegisterRequest registerRequest, HttpServletResponse response) {
         User newUser = userService.createUser(registerRequest);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(newUser.getId());
+        CookieUtils.addCookie(response, "refreshToken", refreshToken.getToken(), refreshTokenExpiration);
+
         return generateAuthResponse(newUser);
     }
 
     @Override
     @Transactional
-    public AuthResponse login(LoginRequest loginRequest) {
+    public AuthResponse login(LoginRequest loginRequest, HttpServletResponse response) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.usernameOrEmail(),
@@ -55,13 +62,19 @@ public class AuthServiceImpl implements AuthService {
         } else {
             user = userService.findByUsername(loginRequest.usernameOrEmail());
         }
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+        CookieUtils.addCookie(response, "refreshToken", refreshToken.getToken(), refreshTokenExpiration);
+
         return generateAuthResponse(user);
     }
 
     @Override
     @Transactional
-    public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {
-        String requestRefreshToken = request.refreshToken();
+    public TokenRefreshResponse refreshToken(String requestRefreshToken, HttpServletResponse response) {
+        if (requestRefreshToken == null || requestRefreshToken.isEmpty()) {
+            throw new RuntimeException("Refresh token is missing from cookies!");
+        }
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
@@ -70,13 +83,15 @@ public class AuthServiceImpl implements AuthService {
                     UserDetails userDetails = buildUserDetails(user);
                     String accessToken = jwtUtil.generateAccessToken(userDetails);
 
+                    refreshTokenService.deleteByUserId(user.getId());
+
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
+                    CookieUtils.addCookie(response, "refreshToken", newRefreshToken.getToken(), refreshTokenExpiration);
 
                     return new TokenRefreshResponse(
                             accessToken,
-                            newRefreshToken.getToken(),
                             "Bearer",
-                            accessTokenExpirationMs / 1000
+                            accessTokenExpiration / 1000
                     );
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
@@ -87,17 +102,14 @@ public class AuthServiceImpl implements AuthService {
 
         String accessToken = jwtUtil.generateAccessToken(userDetails);
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
-
         Set<String> roleNames = user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());
 
         return new AuthResponse(
                 accessToken,
-                refreshToken.getToken(),
                 "Bearer",
-                accessTokenExpirationMs / 1000,
+                accessTokenExpiration / 1000,
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),

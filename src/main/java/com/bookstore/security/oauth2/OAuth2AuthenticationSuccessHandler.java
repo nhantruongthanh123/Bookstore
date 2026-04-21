@@ -26,6 +26,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value("${app.oauth2.authorized-redirect-uri}")
     private String authorizedRedirectUri;
 
+    @Value("${jwt.refresh-token-expiration}")
+    private int refreshTokenExpiration;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
@@ -38,12 +41,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         User user = userPrincipal.getUser();
 
         String accessToken = jwtUtil.generateAccessToken(userPrincipal);
-
         String refreshToken = refreshTokenService.createRefreshToken(user.getId()).getToken();
+
+        CookieUtils.addCookie(response, "refreshToken", refreshToken, refreshTokenExpiration);
 
         String targetUrl = UriComponentsBuilder.fromUriString(authorizedRedirectUri)
                 .queryParam("accessToken", accessToken)
-                .queryParam("refreshToken", refreshToken)
                 .build().toUriString();
 
         clearAuthenticationAttributes(request);

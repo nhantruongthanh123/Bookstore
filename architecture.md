@@ -363,7 +363,7 @@ com.bookstore/
 |--------|----------|-------------|--------------|----------|
 | POST | `/api/auth/register` | Register new user | RegisterRequest | AuthResponse |
 | POST | `/api/auth/login` | Login with username/email | LoginRequest | AuthResponse |
-| POST | `/api/auth/refresh` | Refresh access token | TokenRefreshRequest | TokenRefreshResponse |
+| POST | `/api/auth/refresh` | Refresh access token | `String` (raw refresh token) | TokenRefreshResponse |
 | GET | `/oauth2/authorization/google` | Initiate Google OAuth2 login | - | Redirect to Google |
 | GET | `/login/oauth2/code/google` | OAuth2 callback endpoint | - | Redirect with JWT |
 
@@ -440,16 +440,18 @@ com.bookstore/
 1. Traditional Authentication (Username/Password)
    ├─> POST /api/auth/register or /api/auth/login
    ├─> AuthService validates credentials (BCrypt)
-   ├─> JwtUtil generates access token (15 min) & refresh token (7 days)
-   └─> AuthResponse with both tokens returned
+   ├─> JwtUtil generates access token (15 min), RefreshTokenService generates refresh token (7 days)
+   ├─> AuthResponse returns access token + user info
+   └─> `refreshToken` is issued in HttpOnly cookie (`Set-Cookie`)
 
 2. OAuth2 Authentication (Google)
    ├─> User clicks "Login with Google"
    ├─> Redirect to Google OAuth2 consent screen
    ├─> Google redirects back with authorization code
    ├─> CustomOAuth2UserService creates/links user account
-   ├─> OAuth2AuthenticationSuccessHandler generates JWT
-   └─> Redirect to frontend with JWT in URL
+   ├─> OAuth2AuthenticationSuccessHandler generates access token + refresh token
+   ├─> Refresh token stored in HttpOnly cookie
+   └─> Redirect to frontend with access token in URL query param
 
 3. Subsequent API Requests
    ├─> Client sends "Authorization: Bearer {access_token}"
@@ -460,18 +462,24 @@ com.bookstore/
    └─> Request proceeds to controller with @PreAuthorize checks
 
 4. Token Refresh Flow
-   ├─> POST /api/auth/refresh with refresh token
+   ├─> POST /api/auth/refresh with raw refresh token string
    ├─> RefreshTokenService verifies token (not expired/revoked)
+   ├─> Existing refresh token is revoked and rotated
    ├─> JwtUtil generates new access token (15 min)
-   └─> TokenRefreshResponse with new access token
+   └─> TokenRefreshResponse + new HttpOnly refresh token cookie
 ```
 
 ### Security Configuration
 
 **Public Endpoints:**
 - `/api/auth/**` - Registration, login, token refresh
+- `/oauth2/authorization/google` and `/login/oauth2/code/google` - OAuth2 login flow
+- `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-resources/**` - API docs
+- `OPTIONS /**` - CORS preflight
 - `/api/books` (GET only) - Browse books without authentication
 - `/api/books/{id}` (GET only) - View book details
+- `/api/authors` (GET only) - Browse authors
+- `/api/authors/{id}` (GET only) - View author details
 - `/api/categories` (GET only) - Browse categories
 
 **Authenticated Endpoints:**
@@ -486,7 +494,7 @@ com.bookstore/
 **Security Features:**
 - Session Management: **STATELESS** (no server-side sessions)
 - Password Encoding: **BCryptPasswordEncoder**
-- CORS: Enabled for all origins with credentials support
+- CORS: Allowed origins are `http://localhost:3000` and `https://bookshop-peach.vercel.app` with credentials support
 - CSRF: Disabled (API mode with JWT)
 - Method Security: `@PreAuthorize` annotations for role-based access
 
@@ -501,8 +509,8 @@ com.bookstore/
 **Refresh Token:**
 - Expiration: 604,800,000 ms (7 days)
 - Storage: Database table `refresh_tokens`
-- Features: Revocation support, expiry date cleanup
-- One-time use: Can be configured for rotation
+- Features: Revocation support, expiry date cleanup, cookie rotation on refresh
+- Transport: HttpOnly cookie (`refreshToken`)
 
 **OAuth2 Configuration:**
 - Provider: Google
@@ -619,8 +627,8 @@ cloudinary.api-secret=${CLOUDINARY_API_SECRET}
 ### JWT Configuration
 ```properties
 jwt.secret=${JWT_SECRET}
-jwt.expiration=900000           # 15 minutes
-jwt.refresh-expiration=604800000 # 7 days
+jwt.access-token-expiration=900000
+jwt.refresh-token-expiration=604800000
 ```
 
 ### OAuth2 Configuration
@@ -633,7 +641,7 @@ spring.security.oauth2.client.registration.google.redirect-uri=http://localhost:
 ### Frontend Integration
 ```properties
 app.frontend.login-url=http://localhost:3000/login
-app.oauth2.redirect-uri=http://localhost:3000/oauth2/redirect
+app.oauth2.authorized-redirect-uri=http://localhost:3000/oauth2/redirect
 ```
 
 ### Docker Compose Integration
@@ -944,7 +952,7 @@ src/test/java/
 - ✅ Index on refresh_token user_id
 
 ### 🛡️ Security Features
-- ✅ CORS enabled for all origins
+- ✅ CORS enabled for configured frontend origins (`localhost:3000`, `bookshop-peach.vercel.app`)
 - ✅ CSRF disabled (API mode)
 - ✅ BCrypt password encoding
 - ✅ Custom UserDetailsService
