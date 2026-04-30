@@ -1,6 +1,6 @@
 package com.bookstore.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,19 +8,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -43,14 +43,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             username = jwtUtil.extractUsername(jwt);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                Long userId = jwtUtil.extractUserId(jwt);
+                Collection<SimpleGrantedAuthority> authorities = jwtUtil.extractAuthorities(jwt);
 
-                UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
-
-                if (jwtUtil.isTokenValid(jwt, userDetails)) {
+                if (userId != null && jwtUtil.isTokenValid(jwt)) {
+                    UserPrincipal principal = new UserPrincipal(userId, username, authorities);
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            principal,
                             null,
-                            userDetails.getAuthorities()
+                            authorities
                     );
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -59,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-        catch (ExpiredJwtException e) {
+        catch (JwtException | IllegalArgumentException e) {
             SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(request, response);

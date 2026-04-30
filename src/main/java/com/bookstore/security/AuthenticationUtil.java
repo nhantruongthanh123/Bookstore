@@ -36,7 +36,7 @@ public class AuthenticationUtil {
         
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserPrincipal userPrincipal) {
-            return userPrincipal.getUser().getId();
+            return userPrincipal.getId();
         }
         if (principal instanceof String && principal.equals("anonymousUser")) {
             throw new RuntimeException("User is anonymous");

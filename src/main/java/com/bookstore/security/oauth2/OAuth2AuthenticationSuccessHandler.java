@@ -39,6 +39,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         User user = userPrincipal.getUser();
+        if (user == null) {
+            throw new IllegalStateException("OAuth2 principal is missing user entity");
+        }
 
         String accessToken = jwtUtil.generateAccessToken(userPrincipal);
         String refreshToken = refreshTokenService.createRefreshToken(user.getId()).getToken();

@@ -113,10 +113,11 @@ public class UserServiceImpl implements UserService {
 
     private User getUserFromUserDetails(UserDetails userDetails) {
         if (userDetails instanceof UserPrincipal userPrincipal) {
-            return userPrincipal.getUser();
-        } else {
-            return findByUsername(userDetails.getUsername());
+            if (userPrincipal.getUser() != null) {
+                return userPrincipal.getUser();
+            }
         }
+        return findByUsername(userDetails.getUsername());
     }
 
     private UserResponse mapToUserResponse(User user) {

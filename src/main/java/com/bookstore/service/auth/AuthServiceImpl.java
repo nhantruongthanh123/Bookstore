@@ -6,6 +6,7 @@ import com.bookstore.entity.RefreshToken;
 import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
 import com.bookstore.security.JwtUtil;
+import com.bookstore.security.UserPrincipal;
 import com.bookstore.security.oauth2.CookieUtils;
 import com.bookstore.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,12 +128,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private UserDetails buildUserDetails(User user) {
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getRoles().stream()
-                        .map(r -> new SimpleGrantedAuthority(r.getName()))
-                        .collect(Collectors.toList())
-        );
+        return new UserPrincipal(user);
     }
 }
