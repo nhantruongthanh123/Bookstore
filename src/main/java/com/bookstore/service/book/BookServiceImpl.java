@@ -22,8 +22,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +47,7 @@ public class BookServiceImpl implements BookService {
 
     @Cacheable(value = "books", key = "#id")
     @Override
+    @Transactional(readOnly = true)
     public BookResponse getBookById(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
@@ -54,12 +57,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @CacheEvict(value = "books_page", allEntries = true)
+    @Transactional
     public BookResponse createBook(BookRequest bookRequest) {
         Book newBook = bookMapper.toEntity(bookRequest);
-        newBook.setAuthors(resolveAuthors(bookRequest));
 
-        Set<Category> categories = new java.util.HashSet<>(categoryRepository.findAllById(bookRequest.categoryIds()));
-        newBook.setCategories(categories);
+        validateAuthors(newBook, bookRequest);
+        validateCategories(newBook, bookRequest);
 
         Book savedBook = bookRepository.save(newBook);
 
@@ -68,14 +71,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @CacheEvict(value = {"books_page", "books"}, allEntries = true)
+    @Transactional
     public BookResponse updateBook(Long id, BookRequest bookRequest){
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No book with id: " + id));
 
         bookMapper.updateBookFromRequest(bookRequest, existingBook);
-        existingBook.setAuthors(resolveAuthors(bookRequest));
-        Set<Category> categories = new java.util.HashSet<>(categoryRepository.findAllById(bookRequest.categoryIds()));
-        existingBook.setCategories(categories);
+
+        validateAuthors(existingBook, bookRequest);
+        validateCategories(existingBook, bookRequest);
 
         Book updatedBook = bookRepository.save(existingBook);
 
@@ -84,6 +88,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @CacheEvict(value = {"books_page", "books"}, allEntries = true)
+    @Transactional
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("No book with id: " + id);
@@ -93,7 +98,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<BookResponse> searchBooks(SearchBookRequest request, Pageable pageable){
+    public PageResponse<BookResponse> searchBooks(SearchBookRequest request, Pageable pageable) {
         Specification<Book> spec = Specification.where(BookSpecification.isNotDeleted())
                 .and(BookSpecification.hasTitle(request.title()))
                 .and(BookSpecification.hasAuthor(request.author()))
@@ -106,21 +111,31 @@ public class BookServiceImpl implements BookService {
         return PageResponse.of(responsePage);
     }
 
-    private Set<Author> resolveAuthors(BookRequest request) {
-        Set<Author> resolved = new LinkedHashSet<>();
-        for (Long authorId : request.authorsIds()) {
-            if (authorId == null) {
-                continue;
-            }
-            Author author = authorRepository.findById(authorId)
-                    .orElseThrow(() -> new ResourceNotFoundException("No author with id: " + authorId));
-            resolved.add(author);
-        }
+    private void validateAuthors(Book book, BookRequest bookRequest){
+        Set<Author> authors = new java.util.HashSet<>(authorRepository.findAllById(bookRequest.authorsIds()));
+        if (authors.size() != bookRequest.authorsIds().size()) {
+            Set<Long> foundIds = authors.stream()
+                    .map(Author::getId)
+                    .collect(Collectors.toSet());
+            List<Long> missingIds = new ArrayList<>(bookRequest.authorsIds());
+            missingIds.removeAll(foundIds);
 
-        if (resolved.isEmpty()) {
-            throw new IllegalArgumentException("Author is required");
+            throw new ResourceNotFoundException("Can not find author's ID: " + missingIds);
         }
+        book.setAuthors(authors);
+    }
 
-        return resolved;
+    private void validateCategories(Book book, BookRequest bookRequest){
+        Set<Category> categories = new java.util.HashSet<>(categoryRepository.findAllById(bookRequest.categoryIds()));
+        if (categories.size() != bookRequest.categoryIds().size()) {
+            Set<Long> foundIds = categories.stream()
+                    .map(Category::getId)
+                    .collect(Collectors.toSet());
+            List<Long> missingIds = new ArrayList<>(bookRequest.categoryIds());
+            missingIds.removeAll(foundIds);
+
+            throw new ResourceNotFoundException("Can not find category's ID: " + missingIds);
+        }
+        book.setCategories(categories);
     }
 }

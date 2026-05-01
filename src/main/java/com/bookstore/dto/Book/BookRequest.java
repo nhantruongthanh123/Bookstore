@@ -31,5 +31,6 @@ public record BookRequest(
         @Min(value = 0, message = "Quantity cannot be negative")
         Integer quantity,
 
+        @NotEmpty(message = "At least one category is required")
         Set<Long> categoryIds
 ) {}
