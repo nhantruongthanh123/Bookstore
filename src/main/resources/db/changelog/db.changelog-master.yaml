@@ -35,3 +35,5 @@ databaseChangeLog:
       file: db/changelog/changes/017-backfill-authors-from-books.yaml
   - include:
       file: db/changelog/changes/018-validate-author-mapping-and-drop-legacy-book-author-column.yaml
+  - include:
+      file: db/changelog/changes/019-create-secondary-indexes.yaml

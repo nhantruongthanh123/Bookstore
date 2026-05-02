@@ -1,0 +1,82 @@
+databaseChangeLog:
+  - changeSet:
+      id: 019-create-secondary-indexes
+      author: nhan
+      changes:
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_user_id_order_date
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: order_date
+
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_order_date
+            columns:
+              - column:
+                  name: order_date
+
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_items_order_id
+            columns:
+              - column:
+                  name: order_id
+
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_items_book_id
+            columns:
+              - column:
+                  name: book_id
+
+        - createIndex:
+            tableName: books
+            indexName: idx_books_is_deleted_quantity_id
+            columns:
+              - column:
+                  name: is_deleted
+              - column:
+                  name: quantity
+              - column:
+                  name: id
+
+        - createIndex:
+            tableName: books
+            indexName: idx_books_is_deleted_price
+            columns:
+              - column:
+                  name: is_deleted
+              - column:
+                  name: price
+
+        - createIndex:
+            tableName: cart_items
+            indexName: idx_cart_items_cart_id
+            columns:
+              - column:
+                  name: cart_id
+
+        - createIndex:
+            tableName: book_category
+            indexName: idx_book_category_category_id
+            columns:
+              - column:
+                  name: category_id
+
+        - createIndex:
+            tableName: book_category
+            indexName: idx_book_category_book_id
+            columns:
+              - column:
+                  name: book_id
+
+        - createIndex:
+            tableName: refresh_tokens
+            indexName: idx_refresh_tokens_expiry_date
+            columns:
+              - column:
+                  name: expiry_date
