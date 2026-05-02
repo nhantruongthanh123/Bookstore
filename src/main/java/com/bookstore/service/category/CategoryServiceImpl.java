@@ -3,17 +3,17 @@ package com.bookstore.service.category;
 
 import com.bookstore.dto.Category.CategoryRequest;
 import com.bookstore.dto.Category.CategoryResponse;
+import com.bookstore.dto.Page.PageResponse;
 import com.bookstore.entity.Category;
 import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.mapper.CategoryMapper;
 import com.bookstore.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,10 +22,11 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    @Cacheable(value = "categories", key = "'all'")
-    public List<CategoryResponse> getAllCategories(){
-        List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map(categoryMapper::toResponse).collect(Collectors.toList());
+    @Cacheable(value = "categories", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
+    public PageResponse<CategoryResponse> getAllCategories(Pageable pageable){
+        Page<CategoryResponse> categories = categoryRepository.findAll(pageable)
+                .map(categoryMapper::toResponse);
+        return PageResponse.of(categories);
     }
 
     @Override

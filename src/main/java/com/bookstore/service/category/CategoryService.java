@@ -2,11 +2,11 @@ package com.bookstore.service.category;
 
 import com.bookstore.dto.Category.CategoryRequest;
 import com.bookstore.dto.Category.CategoryResponse;
-
-import java.util.List;
+import com.bookstore.dto.Page.PageResponse;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    List<CategoryResponse> getAllCategories();
+    PageResponse<CategoryResponse> getAllCategories(Pageable pageable);
     CategoryResponse getCategoryById(Long id);
     CategoryResponse createCategory(CategoryRequest category);
     CategoryResponse updateCategory(Long id, CategoryRequest categoryDetails);

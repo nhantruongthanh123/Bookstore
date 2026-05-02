@@ -3,10 +3,10 @@ package com.bookstore.service.user;
 import com.bookstore.dto.Auth.RegisterRequest;
 import com.bookstore.dto.Auth.UpdateUserRequest;
 import com.bookstore.dto.Auth.UserResponse;
+import com.bookstore.dto.Page.PageResponse;
 import com.bookstore.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.List;
 
 public interface UserService {
     User createUser(RegisterRequest registerRequest);
@@ -17,5 +17,5 @@ public interface UserService {
     UserResponse getCurrentUser(UserDetails userDetails);
     UserResponse updateUser(UserDetails userDetails, UpdateUserRequest request);
 
-    List<UserResponse> getAllUsers();
+    PageResponse<UserResponse> getAllUsers(Pageable pageable);
 }

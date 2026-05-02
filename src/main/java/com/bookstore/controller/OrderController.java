@@ -2,12 +2,12 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.Order.OrderRequest;
 import com.bookstore.dto.Order.OrderResponse;
+import com.bookstore.dto.Page.PageResponse;
 import com.bookstore.entity.OrderStatus;
 import com.bookstore.security.AuthenticationUtil;
 import com.bookstore.service.order.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -58,10 +58,10 @@ public class OrderController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
-    public ResponseEntity<Page<OrderResponse>> getAllOrders(
+    public ResponseEntity<PageResponse<OrderResponse>> getAllOrders(
             @PageableDefault(size = 10, sort = "orderDate", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return ResponseEntity.ok(orderService.findAll(pageable));
+        return ResponseEntity.ok(PageResponse.of(orderService.findAll(pageable)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

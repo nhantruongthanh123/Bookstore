@@ -3,6 +3,7 @@ package com.bookstore.service.user;
 import com.bookstore.dto.Auth.RegisterRequest;
 import com.bookstore.dto.Auth.UpdateUserRequest;
 import com.bookstore.dto.Auth.UserResponse;
+import com.bookstore.dto.Page.PageResponse;
 import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
 import com.bookstore.exception.DuplicateResourceException;
@@ -12,15 +13,15 @@ import com.bookstore.repository.RoleRepository;
 import com.bookstore.repository.UserRepository;
 import com.bookstore.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = getUserFromUserDetails(userDetails);
-        return mapToUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
     @Override
@@ -108,7 +109,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User updatedUser = userRepository.save(user);
-        return mapToUserResponse(updatedUser);
+        return userMapper.toUserResponse(updatedUser);
     }
 
     private User getUserFromUserDetails(UserDetails userDetails) {
@@ -120,35 +121,11 @@ public class UserServiceImpl implements UserService {
         return findByUsername(userDetails.getUsername());
     }
 
-    private UserResponse mapToUserResponse(User user) {
-        Set<String> roleNames = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getPhoneNumber(),
-                roleNames,
-                user.getEnabled(),
-                user.getAccountNonLocked(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getAvatar(),
-                user.getAddress(),
-                user.getDateOfBirth(),
-                user.getGender()
-        );
-    }
-
     @Override
     @Transactional
-    public List<UserResponse> getAllUsers(){
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toUserResponse)
-                .collect(Collectors.toList());
+    public PageResponse<UserResponse> getAllUsers(Pageable pageable){
+        Page<UserResponse> users = userRepository.findAll(pageable)
+                .map(userMapper::toUserResponse);
+        return PageResponse.of(users);
     }
 }

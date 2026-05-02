@@ -3,13 +3,15 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.Category.CategoryRequest;
 import com.bookstore.dto.Category.CategoryResponse;
+import com.bookstore.dto.Page.PageResponse;
 import com.bookstore.service.category.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,8 +20,10 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<CategoryResponse> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ResponseEntity<PageResponse<CategoryResponse>> getAllCategories(
+            @PageableDefault(size = 20, sort = "name") Pageable pageable
+    ) {
+        return ResponseEntity.ok(categoryService.getAllCategories(pageable));
     }
 
     @GetMapping("/{id}")
