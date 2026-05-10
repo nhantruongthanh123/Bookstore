@@ -16,10 +16,12 @@ public interface BookMapper {
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     Book toEntity(BookRequest bookRequest);
 
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     void updateBookFromRequest(BookRequest request, @MappingTarget Book book);
 }
