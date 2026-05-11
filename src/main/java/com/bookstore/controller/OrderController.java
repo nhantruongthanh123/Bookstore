@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 import static com.bookstore.security.AuthenticationUtil.*;
 
 @RestController
@@ -33,9 +31,9 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getOrderHistory() {
+    public ResponseEntity<PageResponse<OrderResponse>> getOrderHistory(@PageableDefault(size = 5, sort = "orderDate", direction = Sort.Direction.DESC) Pageable pageable) {
         Long userId = getCurrentUserId();
-        return ResponseEntity.ok(orderService.getOrderHistory(userId));
+        return ResponseEntity.ok(PageResponse.of(orderService.getOrderHistory(userId, pageable)));
     }
 
     @GetMapping("/{id}")

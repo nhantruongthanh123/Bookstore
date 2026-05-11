@@ -18,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -113,11 +111,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrderHistory(Long userId){
-        List<Order> orders = orderRepository.findAllByUserIdOrderByOrderDateDesc(userId);
-        return orders.stream()
-                .map(orderMapper::toOrderResponse)
-                .toList();
+    public Page<OrderResponse> getOrderHistory(Long userId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByUserIdOrderByOrderDateDesc(userId, pageable);
+        return orders.map(orderMapper::toOrderResponse);
     }
     // List<OrderResponse> searchOrders(OrderSearchRequest searchParams)
 

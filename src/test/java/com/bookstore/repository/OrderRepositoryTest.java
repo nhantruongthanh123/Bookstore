@@ -5,6 +5,7 @@ import com.bookstore.entity.OrderStatus;
 import com.bookstore.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
@@ -59,7 +60,9 @@ public class OrderRepositoryTest {
         entityManager.flush();
         entityManager.clear();
 
-        List<Order> orders = orderRepository.findAllByUserIdOrderByOrderDateDesc(savedUser.getId());
+        List<Order> orders = orderRepository
+                .findAllByUserIdOrderByOrderDateDesc(savedUser.getId(), PageRequest.of(0, 10))
+                .getContent();
 
         assertThat(orders).isNotEmpty();
         assertThat(orders).hasSize(2);
